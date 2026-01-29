@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// SQLite does not support Enums, so we use Strings.
+// Enums kept as comments for reference.
+
+// enum UserRole { USER, ORGANIZER, VENDOR, ADMIN }
+// enum VerifiedStatus { UNVERIFIED, PENDING, VERIFIED }
+// enum SubscriptionTier { FREE, PRO }
+// enum EventStatus { DRAFT, SUBMITTED, APPROVED, REJECTED, EXPIRED }
+// enum EventTier { FREE_BASIC, STANDARD, FEATURED }
+// enum RainDatePolicy { NONE, RAIN_OR_SHINE, RAIN_DATE_SET, TBD }
+// enum EventType { JUDGED, CRUISE_IN, BOTH }
+// enum PurchaseType { ... }
+// enum PurchaseStatus { PENDING, PAID, FAILED }
+// enum ReportStatus { OPEN, REVIEWED, RESOLVED }
+// enum TargetType { EVENT, VENDOR }
+
+// Models
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("USER") // UserRole
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  profile          Profile?
+  organizerProfile OrganizerProfile?
+  vendor           Vendor?
+  votes            Vote[]
+  saves            EventSave[]
+  purchases        Purchase[]
+  subscriptions    Subscription[]
+  reports          Report[]
+  vendorReviews    VendorReview[]
+}
+
+model Subscription {
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id])
+  stripeSubscriptionId String   @unique
+  stripePriceId        String
+  stripeCurrentPeriodEnd DateTime
+  status               String   // active, past_due, canceled
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String?
+  location  String?
+  website   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrganizerProfile {
+  id             String         @id @default(cuid())
+  userId         String         @unique
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizerName  String
+  phone          String?
+  website        String?
+  verifiedStatus String         @default("UNVERIFIED") // VerifiedStatus
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  events Event[]
+}
+
+model Vendor {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  businessName String
+  slug        String   @unique
+  description String?
+  logoUrl     String?
+  bannerUrl   String?
+  category    VendorCategory
+  website     String?
+  instagram   String?
+  phone       String?
+  email       String?
+  address     String?
+  city        String?
+  state       String?
+  
+  verifiedStatus String   @default("UNVERIFIED") // VerifiedStatus
+  subscriptionTier String @default("FREE") // SubscriptionTier
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  appearances VendorAppearance[]
+  reviews     VendorReview[]
+}
+
+model VendorReview {
+    id        String   @id @default(cuid())
+    vendorId  String
+    vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    rating    Int
+    comment   String?
+    createdAt DateTime @default(now())
+    
+    @@unique([vendorId, userId])
+}
+
+enum VendorCategory {
+    DETAILING
+    PERFORMANCE
+    MECHANIC
+    PHOTOGRAPHY
+    MERCHANDISE
+    FOOD_DRINK
+    OTHER
+}
+
+model Event {
+  id          String           @id @default(cuid())
+  organizerId String
+  organizer   OrganizerProfile @relation(fields: [organizerId], references: [id])
+
+  title       String
+  description String
+  startDateTime DateTime
+  endDateTime   DateTime
+
+  venueName    String
+  addressLine1 String
+  city         String
+  state        String
+  zip          String
+  latitude     Float
+  longitude    Float
+
+  rainDatePolicy String @default("NONE") // RainDatePolicy
+  rainDate       DateTime?
+
+  entryFee     Float?
+  spectatorFee Float?
+  vehicleRequirements String?
+  judgedOrCruiseIn    String @default("BOTH") // EventType
+  charityBeneficiary  String?
+
+  contactEmail String
+  contactPhone String?
+
+  // External Links stored individually
+  websiteUrl      String?
+  facebookUrl     String?
+  registrationUrl String?
+  
+  posterUrl String // Required
+
+  status String    @default("DRAFT") // EventStatus
+  tier   String    @default("FREE_BASIC") // EventTier
+  
+  featuredUntil DateTime?
+  votingEnabled Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  views     Int      @default(0)
+  clicks    Int      @default(0)
+
+  votes           Vote[]
+  saves           EventSave[]
+  vendorAppearances VendorAppearance[]
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+}
+
+model EventSave {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+}
+
+model VendorAppearance {
+  id        String        @id @default(cuid())
+  eventId   String
+  event     Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  vendorId  String
+  vendor    Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  boothInfo String?
+  isBoosted Boolean       @default(false)
+  createdAt DateTime      @default(now())
+
+  @@unique([eventId, vendorId])
+}
+
+model Purchase {
+  id              String         @id @default(cuid())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  type            String         // PurchaseType
+  stripeSessionId String?        @unique
+  amount          Float
+  status          String         @default("PENDING") // PurchaseStatus
+  metadata        String?        // Json not supported in SQLite? actually it is supported by Prisma but mapped to String in DB often. We'll use String for safety.
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  reporterUserId String
+  reporter       User         @relation(fields: [reporterUserId], references: [id])
+  targetType     String       // TargetType
+  targetId       String
+  reason         String
+  notes          String?
+  status         String       @default("OPEN") // ReportStatus
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
