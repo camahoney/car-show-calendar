@@ -2,6 +2,7 @@
 
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { Shield, Facebook, Twitter } from "lucide-react";
 import { Suspense, useState } from "react";
 import { Loader2, Mail, Lock, ArrowRight, User, LayoutDashboard, Calendar } from "lucide-react";
 import Link from "next/link";

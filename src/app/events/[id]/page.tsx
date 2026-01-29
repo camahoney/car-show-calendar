@@ -257,7 +257,51 @@ export default async function EventPage({ params }: PageProps) {
                     </div>
                 </div>
             </div>
-            <ViewTracker eventId={event.id} />
         </div>
+            </div >
+
+        <ViewTracker eventId={event.id} />
+
+    {/* Structured Data (JSON-LD) */ }
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Event",
+                "name": event.title,
+                "startDate": event.startDateTime,
+                "endDate": event.endDateTime,
+                "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                "eventStatus": "https://schema.org/EventScheduled",
+                "location": {
+                    "@type": "Place",
+                    "name": event.venueName,
+                    "address": {
+                        "@type": "PostalAddress",
+                        "streetAddress": event.addressLine1,
+                        "addressLocality": event.city,
+                        "addressRegion": event.state,
+                        "postalCode": event.zip,
+                        "addressCountry": "US"
+                    }
+                },
+                "image": [event.posterUrl],
+                "description": event.description,
+                "organizer": {
+                    "@type": "Person",
+                    "name": event.organizer.organizerName
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "price": event.entryFee || 0,
+                    "priceCurrency": "USD",
+                    "url": `${process.env.NEXTAUTH_URL}/events/${event.id}`,
+                    "availability": "https://schema.org/InStock"
+                }
+            })
+        }}
+    />
+        </div >
     );
 }
