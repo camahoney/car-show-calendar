@@ -1,4 +1,4 @@
-import { headers } from "next/headers";
+
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
@@ -10,7 +10,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export async function POST(req: Request) {
     const body = await req.text();
-    const signature = (await headers()).get("Stripe-Signature") as string;
+    const signature = req.headers.get("Stripe-Signature") as string;
 
     if (!webhookSecret) {
         console.warn("⚠️  Stripe Webhook Secret not set. Skipping verification (DEV MODE ONLY) or failing.");

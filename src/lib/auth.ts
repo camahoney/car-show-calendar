@@ -57,53 +57,53 @@ export const authOptions: NextAuthOptions = {
                 return null; // Only allow existing seeded users
             },
         }),
+
+        FacebookProvider({
+            clientId: process.env.FACEBOOK_CLIENT_ID || "",
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET || "",
         }),
-    FacebookProvider({
-        clientId: process.env.FACEBOOK_CLIENT_ID || "",
-        clientSecret: process.env.FACEBOOK_CLIENT_SECRET || "",
-    }),
         TwitterProvider({
             clientId: process.env.TWITTER_CLIENT_ID || "",
             clientSecret: process.env.TWITTER_CLIENT_SECRET || "",
             version: "2.0",
         }),
     ],
-callbacks: {
+    callbacks: {
         async signIn({ user, account, profile }) {
-        console.log("SignIn Callback:", { userEmail: user.email, provider: account?.provider });
-        return true;
-    },
+            console.log("SignIn Callback:", { userEmail: user.email, provider: account?.provider });
+            return true;
+        },
         async session({ session, user, token }) {
-        try {
-            if (session.user) {
-                // Fetch fresh user data to include role
-                const dbUser = await prisma.user.findUnique({
-                    where: { email: session.user.email! },
-                });
-                if (dbUser) {
-                    session.user.id = dbUser.id;
-                    session.user.role = dbUser.role;
+            try {
+                if (session.user) {
+                    // Fetch fresh user data to include role
+                    const dbUser = await prisma.user.findUnique({
+                        where: { email: session.user.email! },
+                    });
+                    if (dbUser) {
+                        session.user.id = dbUser.id;
+                        session.user.role = dbUser.role;
+                    }
                 }
+            } catch (e) {
+                console.error("Session Callback Error:", e);
             }
-        } catch (e) {
-            console.error("Session Callback Error:", e);
-        }
-        return session;
-    },
+            return session;
+        },
         async jwt({ token, user }) {
-        if (user) {
-            token.id = user.id;
+            if (user) {
+                token.id = user.id;
 
-            token.role = user.role;
+                token.role = user.role;
+            }
+            return token;
         }
-        return token;
-    }
-},
-session: {
-    strategy: "jwt", // Use JWT strategy for easier middleware role checks
     },
-pages: {
-    signIn: "/signin",
+    session: {
+        strategy: "jwt", // Use JWT strategy for easier middleware role checks
     },
-debug: true,
+    pages: {
+        signIn: "/signin",
+    },
+    debug: true,
 };
