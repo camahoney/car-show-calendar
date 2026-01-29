@@ -4,6 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const PRICES = {
     EVENT_STANDARD: {
         amount: 2900,

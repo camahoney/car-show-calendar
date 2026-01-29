@@ -14,9 +14,6 @@ export async function POST(req: Request) {
 
     if (!webhookSecret) {
         console.warn("⚠️  Stripe Webhook Secret not set. Skipping verification (DEV MODE ONLY) or failing.");
-        // return new NextResponse("Webhook Error: No Secret", { status: 400 });
-        // For now, we return 400 if strictly needed, but let's try to proceed if we can't verify? 
-        // No, secure by default.
         return new NextResponse("Webhook Error: STRIPE_WEBHOOK_SECRET is missing", { status: 500 });
     }
 
@@ -91,8 +88,6 @@ export async function POST(req: Request) {
             }
         } catch (error) {
             console.error("Database Update Failed", error);
-            // Return 200 to acknowledge receipt even if logic failed? Or 500 to retry?
-            // Usually 500 to retry.
             return new NextResponse("Database Error", { status: 500 });
         }
     }
