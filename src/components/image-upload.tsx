@@ -23,6 +23,8 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onUpload = useCallback((result: any) => {
         onChange(result.info.secure_url);
+        // Force scroll unlock in case widget leaves it locked
+        document.body.style.overflow = 'auto';
     }, [onChange]);
 
     if (!isMounted) return null;
