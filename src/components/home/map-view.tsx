@@ -38,7 +38,8 @@ export default function MapView({ events }: MapViewProps) {
 
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+        console.log("MapView Events:", events.map(e => ({ title: e.title, lat: e.latitude, lng: e.longitude })));
+    }, [events]);
 
     if (!isMounted) return <div className="h-[500px] w-full bg-muted/20 animate-pulse rounded-xl" />;
 

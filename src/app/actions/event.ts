@@ -143,9 +143,10 @@ export async function updateEvent(data: any) {
     });
 
     if (!organizerProfile || existingEvent.organizerId !== organizerProfile.id) {
-        // Allow Admin override?
-        // if (session.user.role !== "ADMIN") 
-        return { error: "Unauthorized: You do not own this event" };
+        // Allow Admin override
+        if (session.user.role !== "ADMIN") {
+            return { error: "Unauthorized: You do not own this event" };
+        }
     }
 
     // Geocode (simplify: re-run always for now)

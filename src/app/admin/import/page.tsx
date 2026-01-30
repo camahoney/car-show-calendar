@@ -11,17 +11,21 @@ import { Loader2 } from "lucide-react";
 export default function ImportPage() {
     const [jsonInput, setJsonInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [results, setResults] = useState<any[]>([]);
 
     async function handleImport() {
         if (!jsonInput.trim()) return;
 
         setLoading(true);
+        setResults([]);
         const result = await importEvents(jsonInput);
         setLoading(false);
 
-        if (result.success) {
-            toast.success(`Successfully imported ${result.count} events!`);
-            setJsonInput("");
+        if (result.success && result.results) {
+            setResults(result.results);
+            const successCount = result.results.filter((r: any) => r.success).length;
+            toast.success(`Processed ${result.results.length} items. ${successCount} imported.`);
+            if (successCount === result.results.length) setJsonInput("");
         } else {
             toast.error(result.error || "Failed to import events");
         }
@@ -46,6 +50,19 @@ export default function ImportPage() {
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Import Events
                     </Button>
+
+                    {results.length > 0 && (
+                        <div className="mt-4 space-y-2 border-t pt-4">
+                            <h3 className="font-bold">Results:</h3>
+                            <ul className="text-sm space-y-1">
+                                {results.map((res, i) => (
+                                    <li key={i} className={res.success ? "text-green-500" : "text-red-500"}>
+                                        {res.success ? "✅" : "❌"} <strong>{res.name}</strong>: {res.loc || res.error}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

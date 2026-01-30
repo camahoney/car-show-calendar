@@ -86,6 +86,11 @@ export default async function AdminAllEventsPage() {
                                                 <Eye className="h-4 w-4" />
                                             </Link>
                                         </Button>
+                                        <Button size="icon" variant="ghost" className="h-8 w-8 hover:text-blue-400" asChild>
+                                            <Link href={`/admin/events/${event.id}/edit`}>
+                                                <Edit className="h-4 w-4" />
+                                            </Link>
+                                        </Button>
                                         <EventActionMenu
                                             eventId={event.id}
                                             currentStatus={event.status}
