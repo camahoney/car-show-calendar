@@ -33,6 +33,7 @@ interface MapViewProps {
 }
 
 export default function MapView({ events }: MapViewProps) {
+    const { addStop, stops, setIsOpen, isOpen, routeGeometry } = useRouteStore();
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
@@ -45,7 +46,7 @@ export default function MapView({ events }: MapViewProps) {
     const center: [number, number] = [39.8283, -98.5795];
     const zoom = 4;
 
-    const { addStop, stops, setIsOpen, isOpen, routeGeometry } = useRouteStore();
+
 
     const handleAddStop = (event: Event) => {
         addStop(event as any); // Type cast for now as store expects & { organizer: any } but plain event is ok for ID
