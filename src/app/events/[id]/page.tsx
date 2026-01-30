@@ -78,10 +78,18 @@ export default async function EventPage({ params }: PageProps) {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            priority
-                    />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
+            {/* Cinematic Background */}
+            <div className="fixed inset-0 h-[80vh] pointer-events-none z-0">
+                <Image
+                    src={event.posterUrl}
+                    alt="Background"
+                    fill
+                    className="object-cover opacity-20 blur-xl scale-110"
+                    priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
+            </div>
 
             <div className="container relative z-10 mx-auto px-4 py-8 pt-32 space-y-8">
 
