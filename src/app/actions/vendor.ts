@@ -86,3 +86,46 @@ export async function registerVendor(data: {
         return { success: false, error: "Failed to register vendor" };
     }
 }
+
+export async function updateVendor(data: {
+    businessName: string;
+    category: VendorCategory;
+    description: string;
+    city: string;
+    state: string;
+    logoUrl?: string;
+    bannerUrl?: string;
+    website?: string;
+    email?: string;
+    phone?: string;
+    instagram?: string;
+}) {
+    const user = await getCurrentUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        const vendor = await prisma.vendor.update({
+            where: { userId: user.id },
+            data: {
+                ...data,
+                // Don't update slug for now to avoid URL breaking, or handle redirect if we do. 
+                // Let's keep slug stable.
+            }
+        });
+
+        revalidatePath(`/vendors/${vendor.slug}`);
+        return { success: true, data: vendor };
+    } catch (error) {
+        console.error("Update failed:", error);
+        return { success: false, error: "Failed to update vendor profile" };
+    }
+}
+
+export async function getMyVendor() {
+    const user = await getCurrentUser();
+    if (!user) return null;
+
+    return prisma.vendor.findUnique({
+        where: { userId: user.id }
+    });
+}
