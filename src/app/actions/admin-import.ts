@@ -88,5 +88,7 @@ export async function importEvents(jsonString: string) {
     }
 
     revalidatePath("/admin/import");
+    revalidatePath("/map");
+    revalidatePath("/events");
     return { success: true, results };
 }

@@ -85,6 +85,7 @@ export async function createEvent(data: any) {
 
         revalidatePath("/");
         revalidatePath("/dashboard");
+        revalidatePath("/map");
         return { success: true, eventId: event.id };
 
     } catch (error) {
@@ -182,6 +183,7 @@ export async function updateEvent(data: any) {
         revalidatePath(`/events/${id}`);
         revalidatePath("/dashboard");
         revalidatePath("/dashboard/events");
+        revalidatePath("/map");
         return { success: true, eventId: id };
     } catch (error) {
         console.error("Failed to update event:", error);
