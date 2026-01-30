@@ -20,7 +20,7 @@ export function SiteHeader() {
 
     return (
         <header className="fixed top-0 w-full z-50 glass border-b border-white/5 shadow-2xl shadow-black/50">
-            <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+            <div className="container mx-auto px-4 h-20 flex items-center justify-between relative">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
                     <div className="relative h-20 w-80 -ml-4 md:-ml-0">
@@ -34,15 +34,17 @@ export function SiteHeader() {
                     </div>
                 </Link>
 
-                {/* Desktop Nav */}
-                <nav className="hidden md:flex items-center gap-6">
+                {/* Desktop Nav - Centered */}
+                <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1">
                     {routes.map((route) => (
                         <Link
                             key={route.href}
                             href={route.href}
                             className={cn(
-                                "text-sm font-medium transition-colors hover:text-primary",
-                                pathname === route.href ? "text-primary" : "text-muted-foreground"
+                                "text-sm font-medium px-4 py-2 rounded-full transition-all hover:bg-white/10 hover:text-white",
+                                pathname === route.href
+                                    ? "text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"
+                                    : "text-muted-foreground"
                             )}
                         >
                             {route.label}

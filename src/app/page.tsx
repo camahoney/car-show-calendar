@@ -44,9 +44,7 @@ export default async function Home() {
             Discover the most exclusive car shows, meetups, and track days in your area. Join a community of over 50,000 enthusiasts.
           </p>
 
-          <div className="mt-12 flex justify-center gap-8 md:gap-16 text-muted-foreground/60 animate-in fade-in duration-1000 delay-500">
-            <p className="text-xs font-mono opacity-30">Deployment ID: Fix-Build-Stability-Test-1</p>
-          </div>
+
         </div>
       </section>
 
