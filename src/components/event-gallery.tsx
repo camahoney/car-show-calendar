@@ -9,6 +9,7 @@ import { addEventPhoto } from "@/app/actions/photo";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 interface EventGalleryProps {
     eventId: string;
@@ -89,7 +90,15 @@ export function EventGallery({ eventId, photos, userId }: EventGalleryProps) {
 
                 {photos.length === 0 && (
                     <div className="col-span-full py-12 text-center bg-white/5 rounded-xl border border-white/5 border-dashed">
-                        <p className="text-muted-foreground">No photos yet. Be the first to add one!</p>
+                        <p className="text-muted-foreground mb-3">No photos yet.</p>
+                        {!userId && (
+                            <p className="text-sm text-primary">
+                                <Link href="/signin" className="hover:underline">Sign in</Link> to be the first to share a photo!
+                            </p>
+                        )}
+                        {userId && (
+                            <p className="text-sm text-muted-foreground">Be the first to add one!</p>
+                        )}
                     </div>
                 )}
             </div>
