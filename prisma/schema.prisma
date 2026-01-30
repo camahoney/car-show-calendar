@@ -215,6 +215,7 @@ model Event {
   
   featuredUntil DateTime?
   votingEnabled Boolean   @default(true)
+  isClaimable   Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

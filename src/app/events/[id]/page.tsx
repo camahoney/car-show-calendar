@@ -12,6 +12,7 @@ import { ShareButtons } from "@/components/share-buttons";
 import { ViewTracker } from "@/components/view-tracker";
 import { getWeather } from "@/lib/weather";
 import { WeatherWidget } from "@/components/weather-widget";
+import { ClaimEventButton } from "@/components/claim-event-button";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -258,6 +259,14 @@ export default async function EventPage({ params }: PageProps) {
                             )}
 
                             {/* Upgrade Prompt for Viewer (Optional - could implement logic to show "Upgrade" if owner) */}
+                            {event.isClaimable && (
+                                <div className="mt-6">
+                                    <ClaimEventButton eventId={event.id} />
+                                    <p className="text-xs text-center text-muted-foreground mt-2">
+                                        Is this your event? Claim it to manage details.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Charity Card */}

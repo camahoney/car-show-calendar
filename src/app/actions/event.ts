@@ -192,3 +192,51 @@ export async function updateEvent(data: any) {
         return { error: "Database error" };
     }
 }
+
+export async function claimEvent(eventId: string) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+        return { error: "Unauthorized" };
+    }
+
+    const event = await prisma.event.findUnique({
+        where: { id: eventId },
+    });
+
+    if (!event) return { error: "Event not found" };
+    if (!event.isClaimable) return { error: "This event is not available for claiming." };
+
+    // Get/Create Organizer Profile
+    let organizer = await prisma.organizerProfile.findUnique({
+        where: { userId: session.user.id }
+    });
+
+    if (!organizer) {
+        organizer = await prisma.organizerProfile.create({
+            data: {
+                userId: session.user.id,
+                organizerName: session.user.name || "Newly Claimed Organizer",
+                verifiedStatus: "UNVERIFIED"
+            }
+        });
+    }
+
+    try {
+        await prisma.event.update({
+            where: { id: eventId },
+            data: {
+                organizerId: organizer.id,
+                isClaimable: false,
+                tier: "STANDARD", // Free Upgrade Reward
+                updatedAt: new Date(),
+            }
+        });
+
+        revalidatePath(`/events/${eventId}`);
+        revalidatePath("/dashboard");
+        return { success: true };
+    } catch (e) {
+        console.error("Claim error:", e);
+        return { error: "Failed to claim event." };
+    }
+}
