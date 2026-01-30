@@ -50,6 +50,9 @@ export default async function EventPage({ params }: PageProps) {
             organizer: true,
             rsvps: {
                 include: { vehicle: true }
+            },
+            photos: {
+                orderBy: { createdAt: 'desc' }
             }
         }
     });
@@ -106,6 +109,11 @@ export default async function EventPage({ params }: PageProps) {
                             <Badge variant="outline" className="border-white/10 text-gray-200 backdrop-blur-md bg-black/20">
                                 {event.status}
                             </Badge>
+                            {event.isPreRelease && (
+                                <Badge variant="secondary" className="bg-yellow-500 text-black font-bold shadow-lg shadow-yellow-500/20 border-0">
+                                    Save The Date
+                                </Badge>
+                            )}
                         </div>
                         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight drop-shadow-2xl">
                             {event.title}
@@ -180,6 +188,7 @@ export default async function EventPage({ params }: PageProps) {
                             </div>
                         </div>
 
+
                         {/* Attendees Section */}
                         <div className="glass p-6 rounded-2xl space-y-4">
                             <div className="flex items-center justify-between">
@@ -193,6 +202,16 @@ export default async function EventPage({ params }: PageProps) {
                             </div>
                             <AttendeesList rsvps={event.rsvps} />
                         </div>
+
+                        {/* Gallery Section */}
+                        <div className="glass p-6 rounded-2xl">
+                            <EventGallery
+                                eventId={event.id}
+                                photos={event.photos}
+                                userId={session?.user?.id}
+                            />
+                        </div>
+
 
 
                         {/* Weather Section */}
@@ -227,6 +246,11 @@ export default async function EventPage({ params }: PageProps) {
 
                     {/* Sidebar (Right) */}
                     <div className="space-y-6">
+                        {/* Organizer Actions */}
+                        {session?.user?.id === event.organizer.userId && event.tier !== 'FEATURED' && (
+                            <UpgradeEventButton eventId={event.id} />
+                        )}
+
                         {/* Status Card */}
                         <div className="glass p-6 rounded-2xl space-y-6">
                             <h3 className="font-semibold text-lg border-b border-white/5 pb-4 mb-4">Event Details</h3>
@@ -257,7 +281,9 @@ export default async function EventPage({ params }: PageProps) {
                                     </div>
                                     <div>
                                         <p className="font-medium text-white">Organizer</p>
-                                        <p className="text-sm text-muted-foreground">{event.organizer.organizerName}</p>
+                                        <Link href={`/organizers/${event.organizer.id}`} className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors">
+                                            {event.organizer.organizerName}
+                                        </Link>
                                     </div>
                                 </div>
 

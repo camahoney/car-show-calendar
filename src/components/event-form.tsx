@@ -50,6 +50,7 @@ export function EventForm({ initialData }: EventFormProps) {
             websiteUrl: "",
             facebookUrl: "",
             registrationUrl: "",
+            isPreRelease: false,
         },
     });
 
@@ -280,28 +281,52 @@ export function EventForm({ initialData }: EventFormProps) {
                         />
                     </div>
 
-                    <FormField
-                        control={form.control}
-                        name="votingEnabled"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                <FormControl>
-                                    <Checkbox
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                </FormControl>
-                                <div className="space-y-1 leading-none">
-                                    <FormLabel>
-                                        Enable Voting
-                                    </FormLabel>
-                                    <FormDescription>
-                                        Allow users to vote for their favorite cars.
-                                    </FormDescription>
-                                </div>
-                            </FormItem>
-                        )}
-                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="votingEnabled"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                        <FormLabel>
+                                            Enable Voting
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Allow users to vote for their favorite cars.
+                                        </FormDescription>
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="isPreRelease"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 bg-yellow-500/10 border-yellow-500/20">
+                                    <FormControl>
+                                        <Checkbox
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                        <FormLabel className="text-yellow-500 font-bold">
+                                            Pre-Release Upload ("Save The Date")
+                                        </FormLabel>
+                                        <FormDescription>
+                                            Mark this as a preliminary upload (e.g. just a flyer).
+                                        </FormDescription>
+                                    </div>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-4">
@@ -311,7 +336,7 @@ export function EventForm({ initialData }: EventFormProps) {
                         name="vehicleRequirements"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Vehicle Requirements</FormLabel>
+                                <FormLabel>Vehicle Requirements <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                 <FormControl>
                                     <Input placeholder="e.g. Pre-1980 Rods & Customs" {...field} value={field.value || ""} />
                                 </FormControl>
@@ -324,7 +349,7 @@ export function EventForm({ initialData }: EventFormProps) {
                         name="charityBeneficiary"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Charity Beneficiary</FormLabel>
+                                <FormLabel>Charity Beneficiary <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                 <FormControl>
                                     <Input placeholder="e.g. Local Food Bank" {...field} value={field.value || ""} />
                                 </FormControl>
@@ -342,7 +367,7 @@ export function EventForm({ initialData }: EventFormProps) {
                             name="websiteUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Website URL</FormLabel>
+                                    <FormLabel>Website URL <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                     <FormControl>
                                         <Input placeholder="https://..." {...field} value={field.value || ""} />
                                     </FormControl>
@@ -355,7 +380,7 @@ export function EventForm({ initialData }: EventFormProps) {
                             name="facebookUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Facebook Event URL</FormLabel>
+                                    <FormLabel>Facebook Event URL <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                     <FormControl>
                                         <Input placeholder="https://facebook.com/events/..." {...field} value={field.value || ""} />
                                     </FormControl>
@@ -368,7 +393,7 @@ export function EventForm({ initialData }: EventFormProps) {
                             name="registrationUrl"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Registration URL</FormLabel>
+                                    <FormLabel>Registration URL <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                     <FormControl>
                                         <Input placeholder="https://..." {...field} value={field.value || ""} />
                                     </FormControl>
@@ -387,7 +412,7 @@ export function EventForm({ initialData }: EventFormProps) {
                             name="contactEmail"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Contact Email</FormLabel>
+                                    <FormLabel>Contact Email <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                     <FormControl>
                                         <Input type="email" placeholder="contact@example.com" {...field} value={field.value || ""} />
                                     </FormControl>
@@ -400,7 +425,7 @@ export function EventForm({ initialData }: EventFormProps) {
                             name="contactPhone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Contact Phone</FormLabel>
+                                    <FormLabel>Contact Phone <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                     <FormControl>
                                         <Input type="tel" placeholder="(555) 123-4567" {...field} value={field.value || ""} />
                                     </FormControl>

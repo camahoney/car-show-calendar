@@ -4,6 +4,7 @@ import { Calendar, MapPin, Ticket } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "./ui/badge";
+import { CountdownTimer } from "./countdown-timer";
 
 interface EventCardProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,6 +13,7 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
     const isFeatured = event.tier === "FEATURED";
+    const isFree = event.tier === "FREE_BASIC" || event.tier === "FREE"; // Check both just in case
     const eventDate = new Date(event.startDateTime);
 
     return (
@@ -44,6 +46,22 @@ export function EventCard({ event }: EventCardProps) {
                             <Badge variant="default" className="bg-primary hover:bg-primary font-bold shadow-lg shadow-primary/20 border-0">
                                 Featured
                             </Badge>
+                        </div>
+                    )}
+
+                    {/* Pre-Release Badge */}
+                    {event.isPreRelease && !isFeatured && (
+                        <div className="absolute top-3 right-3">
+                            <Badge variant="default" className="bg-yellow-500 hover:bg-yellow-600 font-bold shadow-lg shadow-yellow-500/20 border-0 text-black">
+                                Save The Date
+                            </Badge>
+                        </div>
+                    )}
+
+                    {/* Expiration Countdown (Free Listings Only) */}
+                    {isFree && (
+                        <div className="absolute bottom-3 right-3 z-10">
+                            <CountdownTimer targetDate={event.endDateTime} />
                         </div>
                     )}
                 </div>

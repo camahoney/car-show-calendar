@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { format } from "date-fns";
-import { MapPin, Calendar, ArrowRight, Search } from "lucide-react";
+import { format, endOfWeek, startOfWeek, addDays, endOfMonth, startOfToday } from "date-fns";
+import { MapPin, Calendar, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
+import { EventFilters } from "@/components/event-filters";
+import { EventCard } from "@/components/event-card";
 
 export const metadata = {
     title: "All Events | Car Show Calendar",
@@ -13,16 +14,66 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function EventsPage() {
-    let events = [];
+type PageProps = {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function EventsPage({ searchParams }: PageProps) {
+    const params = await searchParams;
+    const filter = typeof params.filter === 'string' ? params.filter : 'all';
+    const query = typeof params.q === 'string' ? params.q : '';
+
+    // Calculate Date Range
+    const today = startOfToday();
+    let dateFilter: any = {
+        gte: new Date(), // Default: Future events
+    };
+
+    if (filter === 'weekend') {
+        // "This Weekend" logic: Friday to Sunday
+        const friday = addDays(startOfWeek(today, { weekStartsOn: 1 }), 4); // Next Friday
+        const sunday = endOfWeek(today, { weekStartsOn: 1 }); // Next Sunday
+
+        // If today is Sunday, show today
+        // If today is Saturday, show today + Sunday
+        // If today is Friday, show today + Sat + Sun
+
+        // Simplified: Show from Now until End of Week (Sunday)
+        // If it's Monday-Thursday, this might show mostly empty unless we look at *next* weekend?
+        // Standard expectation: "This Weekend" usually means the upcoming one. 
+        // Let's stick to: End of *current* week.
+
+        dateFilter = {
+            gte: new Date(),
+            lte: sunday
+        };
+    } else if (filter === 'month') {
+        dateFilter = {
+            gte: new Date(),
+            lte: endOfMonth(today)
+        };
+    }
+
+    // Build Prisma Where Clause
+    const whereClause: any = {
+        status: { in: ["APPROVED", "PUBLISHED"] },
+        endDateTime: dateFilter,
+    };
+
+    if (query) {
+        whereClause.OR = [
+            { title: { contains: query, mode: 'insensitive' } },
+            { description: { contains: query, mode: 'insensitive' } },
+            { city: { contains: query, mode: 'insensitive' } },
+            { state: { contains: query, mode: 'insensitive' } },
+        ];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let events: any[] = [];
     try {
         events = await prisma.event.findMany({
-            where: {
-                status: { in: ["APPROVED", "PUBLISHED"] },
-                startDateTime: {
-                    gte: new Date(),
-                },
-            },
+            where: whereClause,
             orderBy: [
                 { tier: "desc" }, // Featured first
                 { startDateTime: "asc" },
@@ -33,7 +84,6 @@ export default async function EventsPage() {
         });
     } catch (error) {
         console.error("[Events Page] Failed to fetch events:", error);
-        throw error; // Let the error boundary handle it
     }
 
     return (
@@ -42,73 +92,31 @@ export default async function EventsPage() {
             <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" />
 
             <div className="container relative z-10 mx-auto space-y-8">
-                <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div className="flex flex-col gap-6">
                     <div>
                         <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Upcoming Events</h1>
                         <p className="text-muted-foreground">Find your next automotive experience.</p>
                     </div>
-                    <div className="w-full md:w-auto flex gap-2">
-                        <div className="relative flex-1 md:w-64">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Search events..." className="pl-9 glass border-white/10" />
-                        </div>
-                        <Button className="bg-primary hover:bg-primary/90 font-bold">Search</Button>
-                    </div>
+
+                    {/* Filters Component */}
+                    <EventFilters />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {events.length > 0 ? (
                         events.map((event) => (
-                            <Link href={`/events/${event.id}`} key={event.id} className="group block h-full">
-                                <div className="relative h-full overflow-hidden rounded-2xl bg-card border border-white/5 shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1">
-                                    {/* Image Section */}
-                                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
-                                        <Image
-                                            src={event.posterUrl}
-                                            alt={event.title}
-                                            fill
-                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-
-                                        <div className="absolute top-3 left-3">
-                                            <div className="glass px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10 backdrop-blur-md">
-                                                {format(new Date(event.startDateTime), "MMM d")}
-                                            </div>
-                                        </div>
-                                        {event.tier === 'FEATURED' && (
-                                            <div className="absolute top-3 right-3">
-                                                <div className="bg-primary text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg shadow-primary/20">
-                                                    Featured
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div className="absolute bottom-3 left-3 right-3 text-white">
-                                            <p className="text-xs font-medium text-white/80 mb-0.5 flex items-center gap-1">
-                                                <MapPin className="h-3 w-3" /> {event.city}, {event.state}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Content Section */}
-                                    <div className="p-5 flex flex-col gap-3">
-                                        <h3 className="text-xl font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                                            {event.title}
-                                        </h3>
-                                        <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/5 text-sm text-muted-foreground">
-                                            <span>{format(new Date(event.startDateTime), "EEE, h:mm a")}</span>
-                                            <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
+                            <EventCard key={event.id} event={event} />
                         ))
                     ) : (
-                        <div className="col-span-full py-20 text-center space-y-4">
-                            <p className="text-xl text-muted-foreground">No upcoming events found.</p>
+                        <div className="col-span-full py-20 text-center space-y-6 bg-card/50 rounded-2xl border border-white/5">
+                            <div className="space-y-2">
+                                <h3 className="text-2xl font-bold text-white">No events found</h3>
+                                <p className="text-muted-foreground">
+                                    {query ? `No results for "${query}"` : "Try adjusting your filters or check back later."}
+                                </p>
+                            </div>
                             <Button asChild variant="outline">
-                                <Link href="/events/new">Post the First Event</Link>
+                                <Link href="/events/new">Post a Car Show</Link>
                             </Button>
                         </div>
                     )}

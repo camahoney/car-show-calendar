@@ -1,22 +1,14 @@
 import Stripe from "stripe";
 
-export let stripe: Stripe;
+// Use a dummy key during build if missing, to prevent crash.
+const stripeKey = process.env.STRIPE_SECRET_KEY || "sk_test_mock_for_build";
 
-try {
-    stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "sk_test_mock_key_for_build", {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        apiVersion: "2026-01-28.clover" as any,
-    });
-} catch (error) {
-    console.warn("⚠️ Failed to initialize Stripe (likely during build). Using mock.");
-    stripe = {
-        webhooks: {
-            constructEvent: () => ({ type: "mock", data: {} } as any),
-        },
-        checkout: {
-            sessions: {
-                create: () => Promise.resolve({ url: "https://mock.url" } as any),
-            },
-        },
-    } as any;
+export const stripe = new Stripe(stripeKey, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    apiVersion: "2025-01-27.acacia" as any,
+    typescript: true,
+});
+
+if (!process.env.STRIPE_SECRET_KEY) {
+    console.warn("⚠️ STRIPE_SECRET_KEY is missing. Payment features will fail.");
 }

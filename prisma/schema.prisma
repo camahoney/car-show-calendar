@@ -83,6 +83,7 @@ model User {
   vendorReviews    VendorReview[]
   vehicles         Vehicle[]
   rsvps            EventRSVP[]
+  photos           EventPhoto[]
 }
 
 model Subscription {
@@ -202,7 +203,7 @@ model Event {
   judgedOrCruiseIn    String @default("BOTH") // EventType
   charityBeneficiary  String?
 
-  contactEmail String
+  contactEmail String?
   contactPhone String?
 
   // External Links stored individually
@@ -218,6 +219,7 @@ model Event {
   featuredUntil DateTime?
   votingEnabled Boolean   @default(true)
   isClaimable   Boolean   @default(false)
+  isPreRelease  Boolean   @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -229,6 +231,7 @@ model Event {
   saves           EventSave[]
   rsvps           EventRSVP[]
   vendorAppearances VendorAppearance[]
+  photos            EventPhoto[]
 }
 
 model Vote {
@@ -324,4 +327,21 @@ model EventRSVP {
   updatedAt DateTime @updatedAt
 
   @@unique([eventId, userId])
+}
+
+model EventPhoto {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  url       String
+  caption   String?
+  status    String   @default("APPROVED") // APPROVED, REJECTED (Auto-approve for MVP)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
 }

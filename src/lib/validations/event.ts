@@ -19,7 +19,7 @@ export const eventSchema = z.object({
     // Event Type (String for SQLite)
     judgedOrCruiseIn: z.enum(["JUDGED", "CRUISE_IN", "BOTH"]),
     charityBeneficiary: z.string().optional().or(z.literal("")),
-    contactEmail: z.string().email("Invalid contact email"),
+    contactEmail: z.string().email("Invalid contact email").optional().or(z.literal("")),
     contactPhone: z.string().optional().or(z.literal("")),
     // Relax URL validation to avoid blocking submission on minor format issues
     websiteUrl: z.string().optional().or(z.literal("")),
@@ -27,6 +27,7 @@ export const eventSchema = z.object({
     registrationUrl: z.string().optional().or(z.literal("")),
     posterUrl: z.string().min(1, "Poster image is required"),
     votingEnabled: z.boolean().default(true),
+    isPreRelease: z.boolean().default(false),
 });
 
 export type EventFormValues = z.infer<typeof eventSchema>;
