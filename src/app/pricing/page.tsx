@@ -96,6 +96,29 @@ export default function PricingPage() {
                                     </Button>
                                 </CardFooter>
                             </Card>
+
+                            {/* Bundle Tier */}
+                            <Card className="flex flex-col border-indigo-500/30 bg-indigo-500/5 relative overflow-hidden md:col-span-3 lg:col-span-1">
+                                <div className="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">NEW</div>
+                                <CardHeader>
+                                    <CardTitle className="text-indigo-400">The Power Package</CardTitle>
+                                    <CardDescription>For Vendor-Organizers who do it all.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1">
+                                    <div className="text-4xl font-bold mb-6 text-indigo-300">$69<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
+                                    <ul className="space-y-3 text-sm">
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> <b>Pro Vendor Profile</b> ($29 value)</li>
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> <b>1 Free Featured Event</b> / mo</li>
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> Unlimited Standard Events</li>
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> Priority Support</li>
+                                    </ul>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700" asChild>
+                                        <Link href="/dashboard/billing">Get the Bundle</Link>
+                                    </Button>
+                                </CardFooter>
+                            </Card>
                         </div>
 
                         {/* Season Pass Callout */}

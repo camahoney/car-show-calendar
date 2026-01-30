@@ -129,3 +129,39 @@ export async function getMyVendor() {
         where: { userId: user.id }
     });
 }
+
+// Admin Actions
+export async function getAdminVendors() {
+    const user = await getCurrentUser();
+    // @ts-ignore
+    if (!user || user.role !== 'ADMIN') return { success: false, error: "Unauthorized" };
+
+    try {
+        const vendors = await prisma.vendor.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: { user: true }
+        });
+        return { success: true, data: vendors };
+    } catch (error) {
+        console.error("Admin fetch failed:", error);
+        return { success: false, error: "Failed to fetch vendors" };
+    }
+}
+
+export async function toggleVendorStatus(vendorId: string, status: string) {
+    const user = await getCurrentUser();
+    // @ts-ignore
+    if (!user || user.role !== 'ADMIN') return { success: false, error: "Unauthorized" };
+
+    try {
+        await prisma.vendor.update({
+            where: { id: vendorId },
+            data: { verifiedStatus: status }
+        });
+        revalidatePath("/admin/vendors");
+        return { success: true };
+    } catch (error) {
+        console.error("Status update failed:", error);
+        return { success: false, error: "Failed to update status" };
+    }
+}
