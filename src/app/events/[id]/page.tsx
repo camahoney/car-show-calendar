@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { format } from "date-fns";
-import { MapPin, Calendar, Globe, Ticket, User, Info, DollarSign, CloudRain, Heart } from "lucide-react";
+import { MapPin, Calendar, Globe, Ticket, User, Info, DollarSign, CloudRain, Heart, Map as MapIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,8 @@ import { EventMap } from "@/components/event-map";
 import { AddToCalendar } from "@/components/add-to-calendar";
 import { ShareButtons } from "@/components/share-buttons";
 import { ViewTracker } from "@/components/view-tracker";
+import { getWeather } from "@/lib/weather";
+import { WeatherWidget } from "@/components/weather-widget";
 
 interface PageProps {
     params: Promise<{ id: string }>;
@@ -44,6 +46,9 @@ export default async function EventPage({ params }: PageProps) {
     if (!event) notFound();
 
     const fullAddress = `${event.addressLine1}, ${event.city}, ${event.state} ${event.zip}`;
+
+    // Fetch weather data
+    const weatherData = await getWeather(event.latitude, event.longitude);
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -137,6 +142,19 @@ export default async function EventPage({ params }: PageProps) {
                             <div className="prose prose-invert max-w-none text-gray-300 whitespace-pre-line leading-relaxed">
                                 {event.description}
                             </div>
+                        </div>
+
+
+                        {/* Weather Section */}
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-bold flex items-center gap-2">
+                                <CloudRain className="h-6 w-6 text-primary" /> Forecast
+                            </h2>
+                            <WeatherWidget
+                                data={weatherData}
+                                eventDate={event.startDateTime}
+                                rainPolicy={event.rainDatePolicy}
+                            />
                         </div>
 
                         {/* Map Section */}

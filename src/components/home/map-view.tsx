@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Event } from "@prisma/client";
 import { EventCard } from "@/components/event-card";
+import { useRouteStore } from "@/lib/route-store";
+import { RoutePlannerSidebar } from "@/components/route-planner-sidebar";
+import { Button } from "@/components/ui/button";
+import { Plus, Map as MapIcon } from "lucide-react";
+import { toast } from "sonner";
 
 // Fix Leaflet marker icons in Next.js
 const iconUrl = "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png";
@@ -40,6 +45,14 @@ export default function MapView({ events }: MapViewProps) {
     const center: [number, number] = [39.8283, -98.5795];
     const zoom = 4;
 
+    const { addStop, stops, setIsOpen, isOpen, routeGeometry } = useRouteStore();
+
+    const handleAddStop = (event: Event) => {
+        addStop(event as any); // Type cast for now as store expects & { organizer: any } but plain event is ok for ID
+        toast.success("Added to trip!");
+        setIsOpen(true);
+    };
+
     return (
         <div className="h-[600px] w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative z-0">
             <MapContainer
@@ -48,10 +61,29 @@ export default function MapView({ events }: MapViewProps) {
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
             >
+                <RoutePlannerSidebar />
+
+                {/* Floating Open Button */}
+                {!isOpen && stops.length > 0 && (
+                    <div className="absolute top-4 right-4 z-[1000]">
+                        <Button onClick={() => setIsOpen(true)} className="shadow-xl" size="lg">
+                            <MapIcon className="mr-2 h-5 w-5" /> Trip ({stops.length})
+                        </Button>
+                    </div>
+                )}
+
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                 />
+
+                {routeGeometry && (
+                    <GeoJSON
+                        key={JSON.stringify(routeGeometry)} // Force re-render on change
+                        data={routeGeometry}
+                        style={{ color: "#d946ef", weight: 5, opacity: 0.8 }}
+                    />
+                )}
 
                 {events.map((event) => (
                     // Only render if lat/lng exist
@@ -69,9 +101,18 @@ export default function MapView({ events }: MapViewProps) {
                                         <div className="p-3">
                                             <h3 className="font-bold text-sm truncate">{event.title}</h3>
                                             <p className="text-xs text-muted-foreground">{event.city}, {event.state}</p>
-                                            <a href={`/events/${event.id}`} className="block mt-2 text-xs text-primary font-bold hover:underline">
+                                            <a href={`/events/${event.id}`} className="block mt-2 text-xs text-primary font-bold hover:underline mb-2">
                                                 View Details
                                             </a>
+                                            <Button
+                                                size="sm"
+                                                className="w-full h-7 text-xs"
+                                                onClick={() => handleAddStop(event)}
+                                                disabled={stops.some(s => s.event.id === event.id)}
+                                            >
+                                                <Plus className="w-3 h-3 mr-1" />
+                                                {stops.some(s => s.event.id === event.id) ? "Added" : "Add to Trip"}
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
