@@ -13,6 +13,7 @@ import {
 import { Eye, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import EventActionMenu from "./EventActionMenu";
 
 export const dynamic = 'force-dynamic';
 
@@ -63,9 +64,9 @@ export default async function AdminAllEventsPage() {
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={`border-white/10 ${event.status === 'APPROVED' ? 'text-green-400 bg-green-400/10' :
-                                            event.status === 'DRAFT' ? 'text-gray-400' :
-                                                event.status === 'SUBMITTED' ? 'text-orange-400 bg-orange-400/10' :
-                                                    'text-red-400 bg-red-400/10'
+                                        event.status === 'DRAFT' ? 'text-gray-400' :
+                                            event.status === 'SUBMITTED' ? 'text-orange-400 bg-orange-400/10' :
+                                                'text-red-400 bg-red-400/10'
                                         }`}>
                                         {event.status}
                                     </Badge>
@@ -85,7 +86,11 @@ export default async function AdminAllEventsPage() {
                                                 <Eye className="h-4 w-4" />
                                             </Link>
                                         </Button>
-                                        {/* Future: Add Edit/Delete actions here */}
+                                        <EventActionMenu
+                                            eventId={event.id}
+                                            currentStatus={event.status}
+                                            eventTitle={event.title}
+                                        />
                                     </div>
                                 </TableCell>
                             </TableRow>

@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import UserActionMenu from "./UserActionMenu";
 
 export const dynamic = 'force-dynamic';
 
@@ -39,7 +40,7 @@ export default async function AdminUsersPage() {
                             <TableHead className="text-white font-bold">User</TableHead>
                             <TableHead className="text-white font-bold">Role</TableHead>
                             <TableHead className="text-white font-bold">Joined</TableHead>
-                            {/* <TableHead className="text-white font-bold text-right">Actions</TableHead> */}
+                            <TableHead className="text-white font-bold text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -68,11 +69,13 @@ export default async function AdminUsersPage() {
                                 <TableCell className="text-muted-foreground">
                                     {format(new Date(user.createdAt), "MMM d, yyyy")}
                                 </TableCell>
-                                {/* <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </TableCell> */}
+                                <TableCell className="text-right">
+                                    <UserActionMenu
+                                        userId={user.id}
+                                        currentRole={user.role}
+                                        userName={user.name || "Unknown User"}
+                                    />
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
