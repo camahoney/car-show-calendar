@@ -85,7 +85,7 @@ export default function PricingPage() {
                                     <div className="text-4xl font-bold mb-6">$99<span className="text-lg font-normal text-muted-foreground">/event</span></div>
                                     <ul className="space-y-3 text-sm">
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> <b>Homepage Hero Placement</b></li>
-                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Top of Search Results</li>
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Priority placement above organic listings</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> "Featured" Badge</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Weekly Email Newsletter Spot</li>
                                     </ul>
@@ -158,6 +158,14 @@ export default function PricingPage() {
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-blue-400" /> Priority Search Visibility</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-blue-400" /> Attach Profile to Events</li>
                                     </ul>
+
+                                    <div className="mt-6 pt-4 border-t border-white/5">
+                                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Optional add-on (per event)</p>
+                                        <div className="flex items-center justify-between bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
+                                            <span className="font-bold text-blue-100 flex items-center gap-2">➕ Vendor Boost</span>
+                                            <span className="font-bold text-xl">$15</span>
+                                        </div>
+                                    </div>
                                 </CardContent>
                                 <CardFooter>
                                     <Button className="w-full font-bold bg-blue-600 hover:bg-blue-700" asChild>
