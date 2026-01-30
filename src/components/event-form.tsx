@@ -305,20 +305,110 @@ export function EventForm({ initialData }: EventFormProps) {
                 </div>
 
                 <div className="space-y-4">
-                    <h2 className="text-xl font-bold border-b pb-2">Contact Info</h2>
+                    <h2 className="text-xl font-bold border-b pb-2">Additional Information</h2>
                     <FormField
                         control={form.control}
-                        name="contactEmail"
+                        name="vehicleRequirements"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Contact Email</FormLabel>
+                                <FormLabel>Vehicle Requirements</FormLabel>
                                 <FormControl>
-                                    <Input type="email" placeholder="contact@example.com" {...field} value={field.value || ""} />
+                                    <Input placeholder="e.g. Pre-1980 Rods & Customs" {...field} value={field.value || ""} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+                    <FormField
+                        control={form.control}
+                        name="charityBeneficiary"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Charity Beneficiary</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="e.g. Local Food Bank" {...field} value={field.value || ""} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <div className="space-y-4">
+                    <h2 className="text-xl font-bold border-b pb-2">Links</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="websiteUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Website URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://..." {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="facebookUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Facebook Event URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://facebook.com/events/..." {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="registrationUrl"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Registration URL</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="https://..." {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <h2 className="text-xl font-bold border-b pb-2">Contact Info</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="contactEmail"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Contact Email</FormLabel>
+                                    <FormControl>
+                                        <Input type="email" placeholder="contact@example.com" {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="contactPhone"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Contact Phone</FormLabel>
+                                    <FormControl>
+                                        <Input type="tel" placeholder="(555) 123-4567" {...field} value={field.value || ""} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
 
                 <Button type="submit" disabled={loading} className="w-full" size="lg">
