@@ -13,6 +13,7 @@ export function SiteHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const routes = [
+        { href: "/pricing", label: "Pricing" },
         { href: "/events", label: "Events" },
         { href: "/map", label: "Map" },
         { href: "/vendors", label: "Vendors" },
