@@ -14,10 +14,16 @@ import { format } from "date-fns";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminUsersPage() {
-    const users = await prisma.user.findMany({
-        orderBy: { createdAt: 'desc' },
-        take: 100 // Pagination later if needed
-    });
+    let users = [];
+    try {
+        users = await prisma.user.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 100 // Pagination later if needed
+        });
+    } catch (error) {
+        console.error("[Admin Users Page] Failed to fetch users:", error);
+        throw error;
+    }
 
     return (
         <div className="space-y-6">
@@ -53,8 +59,8 @@ export default async function AdminUsersPage() {
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={`border-white/10 ${user.role === 'ADMIN' ? 'text-red-400 bg-red-400/10' :
-                                            user.role === 'ORGANIZER' ? 'text-blue-400 bg-blue-400/10' :
-                                                'text-muted-foreground'
+                                        user.role === 'ORGANIZER' ? 'text-blue-400 bg-blue-400/10' :
+                                            'text-muted-foreground'
                                         }`}>
                                         {user.role}
                                     </Badge>

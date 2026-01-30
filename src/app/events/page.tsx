@@ -14,21 +14,27 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function EventsPage() {
-    const events = await prisma.event.findMany({
-        where: {
-            status: "APPROVED",
-            startDateTime: {
-                gte: new Date(),
+    let events = [];
+    try {
+        events = await prisma.event.findMany({
+            where: {
+                status: "APPROVED",
+                startDateTime: {
+                    gte: new Date(),
+                },
             },
-        },
-        orderBy: [
-            { tier: "desc" }, // Featured first
-            { startDateTime: "asc" },
-        ],
-        include: {
-            organizer: true
-        }
-    });
+            orderBy: [
+                { tier: "desc" }, // Featured first
+                { startDateTime: "asc" },
+            ],
+            include: {
+                organizer: true
+            }
+        });
+    } catch (error) {
+        console.error("[Events Page] Failed to fetch events:", error);
+        throw error; // Let the error boundary handle it
+    }
 
     return (
         <div className="min-h-screen bg-background pt-24 pb-12 px-4">
