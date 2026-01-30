@@ -15,15 +15,16 @@ export const eventSchema = z.object({
     rainDate: z.string().optional().nullable(),
     entryFee: z.number().min(0).default(0),
     spectatorFee: z.number().min(0).default(0),
-    vehicleRequirements: z.string().optional(),
+    vehicleRequirements: z.string().optional().or(z.literal("")),
     // Event Type (String for SQLite)
     judgedOrCruiseIn: z.enum(["JUDGED", "CRUISE_IN", "BOTH"]),
-    charityBeneficiary: z.string().optional(),
+    charityBeneficiary: z.string().optional().or(z.literal("")),
     contactEmail: z.string().email("Invalid contact email"),
-    contactPhone: z.string().optional(),
-    websiteUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
-    facebookUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
-    registrationUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+    contactPhone: z.string().optional().or(z.literal("")),
+    // Relax URL validation to avoid blocking submission on minor format issues
+    websiteUrl: z.string().optional().or(z.literal("")),
+    facebookUrl: z.string().optional().or(z.literal("")),
+    registrationUrl: z.string().optional().or(z.literal("")),
     posterUrl: z.string().url("Poster image is required"),
     votingEnabled: z.boolean().default(true),
 });
