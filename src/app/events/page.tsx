@@ -18,7 +18,7 @@ export default async function EventsPage() {
     try {
         events = await prisma.event.findMany({
             where: {
-                status: "APPROVED",
+                status: { in: ["APPROVED", "PUBLISHED"] },
                 startDateTime: {
                     gte: new Date(),
                 },

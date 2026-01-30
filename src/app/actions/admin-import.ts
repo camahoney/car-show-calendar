@@ -87,7 +87,7 @@ export async function importEvents(jsonString: string) {
                     contactEmail: e.contact_email || "info@example.com",
                     contactPhone: e.contact_phone,
                     posterUrl: "/logo-wide.png", // Default placeholder
-                    status: "PUBLISHED",
+                    status: "APPROVED",
                     isClaimable: true, // Key requirement
                     tier: "FREE_BASIC"
                 }
