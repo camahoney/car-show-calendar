@@ -43,6 +43,11 @@ export function UserNav({ user }: { user: any }) {
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
+                        <Link href="/garage" className="cursor-pointer font-medium">
+                            My Garage
+                        </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                         <Link href="/dashboard/events" className="cursor-pointer font-medium">
                             My Events
                         </Link>

@@ -11,7 +11,8 @@ import {
     Settings,
     ChevronRight,
     FileText,
-    CheckCircle
+    CheckCircle,
+    UploadCloud
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -40,6 +41,11 @@ const navItems = [
         title: "User Management",
         href: "/admin/users",
         icon: Users,
+    },
+    {
+        title: "Import Events",
+        href: "/admin/import",
+        icon: UploadCloud,
     },
     {
         title: "All Events",
