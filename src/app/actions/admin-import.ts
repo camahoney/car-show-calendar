@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { geocodeAddress } from "@/lib/geocoding";
+import { parse } from "date-fns";
 
 export async function importEvents(jsonString: string) {
     const session = await getServerSession(authOptions);
@@ -38,8 +39,31 @@ export async function importEvents(jsonString: string) {
 
     for (const e of events) {
         // Map fields
-        const startDateTime = new Date(`${e.start_date}T${e.start_time || "09:00:00"}`);
-        const endDateTime = new Date(`${e.end_date}T${e.end_time || "17:00:00"}`);
+        // Parse function helper
+        const parseDateTime = (dateStr: string, timeStr: string, defaultTime: string) => {
+            const timePart = timeStr && timeStr.trim() ? timeStr.trim() : defaultTime;
+            // 1. Try format "yyyy-MM-dd hh:mm a" (for "08:00 AM")
+            const combined = `${dateStr} ${timePart}`;
+            let parsed = parse(combined, "yyyy-MM-dd hh:mm a", new Date());
+
+            if (isNaN(parsed.getTime())) {
+                // 2. Try standard ISO "yyyy-MM-ddTHH:mm:ss"
+                parsed = new Date(`${dateStr}T${timePart}`);
+            }
+            if (isNaN(parsed.getTime())) {
+                // 3. Try standard ISO with simple space "yyyy-MM-dd HH:mm"
+                parsed = new Date(`${dateStr} ${timePart}`);
+            }
+
+            if (isNaN(parsed.getTime())) {
+                // Fallback
+                return new Date(`${dateStr}T${defaultTime}`);
+            }
+            return parsed;
+        };
+
+        const startDateTime = parseDateTime(e.start_date, e.start_time, "09:00:00");
+        const endDateTime = parseDateTime(e.end_date, e.end_time, "17:00:00");
 
         // Better Address Formatting (remove empty parts)
         const addressParts = [
@@ -83,7 +107,11 @@ export async function importEvents(jsonString: string) {
             results.push({ name: e.event_name, success: true, loc: `${lat},${lng} (${source})` });
         } catch (err) {
             console.error("Failed to import event:", e.event_name, err);
-            results.push({ name: e.event_name, success: false, error: "DB Error" });
+            results.push({
+                name: e.event_name,
+                success: false,
+                error: err instanceof Error ? err.message : "Unknown DB Error"
+            });
         }
     }
 
