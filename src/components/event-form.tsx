@@ -80,7 +80,10 @@ export function EventForm({ initialData }: EventFormProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+                console.error("Form Validation Errors:", errors);
+                alert("Please correct the errors in the form: " + Object.keys(errors).join(", "));
+            })} className="space-y-8">
                 <div className="space-y-4">
                     <h2 className="text-xl font-bold border-b pb-2">Event Details</h2>
 
