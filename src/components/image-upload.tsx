@@ -57,8 +57,36 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     return (
         <CldUploadWidget
             onSuccess={onUpload}
+            onQueuesEnd={(result, { widget }) => {
+                widget.close();
+                document.body.style.overflow = "auto";
+            }}
+            onClose={() => {
+                document.body.style.overflow = "auto";
+            }}
             signatureEndpoint="/api/sign-cloudinary-params"
-
+            options={{
+                styles: {
+                    palette: {
+                        window: "#101010",
+                        sourceBg: "#202020",
+                        windowBorder: "#90a0b3",
+                        tabIcon: "#FFFFFF",
+                        inactiveTabIcon: "#69778A",
+                        menuIcons: "#FFFFFF",
+                        link: "#e11d48",
+                        action: "#e11d48",
+                        inProgress: "#e11d48",
+                        complete: "#e11d48",
+                        error: "#c43737",
+                        textDark: "#000000",
+                        textLight: "#FFFFFF"
+                    },
+                    fonts: {
+                        "'Outfit', sans-serif": "https://fonts.googleapis.com/css?family=Outfit",
+                    }
+                }
+            }}
         >
             {({ open }) => {
                 const onClick = () => {

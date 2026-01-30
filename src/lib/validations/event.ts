@@ -25,7 +25,7 @@ export const eventSchema = z.object({
     websiteUrl: z.string().optional().or(z.literal("")),
     facebookUrl: z.string().optional().or(z.literal("")),
     registrationUrl: z.string().optional().or(z.literal("")),
-    posterUrl: z.string().url("Poster image is required"),
+    posterUrl: z.string().min(1, "Poster image is required"),
     votingEnabled: z.boolean().default(true),
 });
 
