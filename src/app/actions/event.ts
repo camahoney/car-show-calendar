@@ -45,9 +45,14 @@ export async function createEvent(data: any) {
         });
     }
 
-    // Geocode with shared utility
-    const fullAddress = `${addressLine1}, ${city}, ${state} ${zip}`;
-    const { lat, lng } = await geocodeAddress(fullAddress);
+    // Geocode with shared utility (using structured fallback)
+    const { lat, lng } = await geocodeAddress({
+        street: addressLine1,
+        venue: venueName,
+        city,
+        state,
+        zip
+    });
 
     try {
         const event = await prisma.event.create({
@@ -145,8 +150,13 @@ export async function updateEvent(data: any) {
     }
 
     // Geocode (always re-run to ensure accuracy)
-    const fullAddress = `${addressLine1}, ${city}, ${state} ${zip}`;
-    const { lat, lng } = await geocodeAddress(fullAddress);
+    const { lat, lng } = await geocodeAddress({
+        street: addressLine1,
+        venue: venueName,
+        city,
+        state,
+        zip
+    });
 
     try {
         await prisma.event.update({

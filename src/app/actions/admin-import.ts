@@ -74,9 +74,14 @@ export async function importEvents(jsonString: string) {
             e.address_zip
         ].filter(p => p && p.trim().length > 0);
 
-        const fullAddress = addressParts.join(", ");
-
-        let { lat, lng, source } = await geocodeAddress(fullAddress);
+        // Pass structured data to geocoder for smart fallbacks
+        let { lat, lng, source } = await geocodeAddress({
+            street: e.address_street,
+            venue: e.venue_name,
+            city: e.address_city,
+            state: e.address_state,
+            zip: e.address_zip
+        });
 
         try {
             await prisma.event.create({

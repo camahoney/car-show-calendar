@@ -1,42 +1,86 @@
-export async function geocodeAddress(address: string) {
-    let lat = 39.7817; // Default: Springfield, IL
-    let lng = -89.6501;
-    let source = "Fallback";
 
-    // 1. Try Mapbox if token exists
+interface AddressComponents {
+    street?: string;
+    venue?: string;
+    city: string;
+    state: string;
+    zip?: string;
+}
+
+async function tryGeocode(query: string, sourceName: string): Promise<{ lat: number, lng: number, source: string } | null> {
+
+    // 1. Try Mapbox
     if (process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
         try {
-            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&limit=1`;
+            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&limit=1`;
             const res = await fetch(url);
             const data = await res.json();
             if (data.features && data.features.length > 0) {
                 const [l, t] = data.features[0].center;
-                return { lat: t, lng: l, source: "Mapbox" };
+                return { lat: t, lng: l, source: `Mapbox (${sourceName})` };
             }
         } catch (e) {
             console.error("Mapbox Geocoding failed", e);
         }
     }
 
-    // 2. Fallback to OpenStreetMap (Nominatim) - Free, no key required
+    // 2. Try Nominatim
     try {
-        // User-Agent is required by Nominatim TOS
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-        const res = await fetch(url, {
-            headers: {
-                "User-Agent": "CarShowCalendar/1.0"
-            }
-        });
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+        const res = await fetch(url, { headers: { "User-Agent": "CarShowCalendar/1.0" } });
         const data = await res.json();
         if (data && data.length > 0) {
             return {
                 lat: parseFloat(data[0].lat),
                 lng: parseFloat(data[0].lon),
-                source: "Nominatim"
+                source: `Nominatim (${sourceName})`
             };
         }
     } catch (e) {
         console.error("Nominatim Geocoding failed", e);
+    }
+
+    return null;
+}
+
+export async function geocodeAddress(input: string | AddressComponents) {
+    let lat = 39.7817; // Default: Springfield, IL
+    let lng = -89.6501;
+    let source = "Fallback";
+
+    // Is input just a string or components?
+    // If components, we can try multiple strategies
+    if (typeof input === 'string') {
+        const result = await tryGeocode(input, "String");
+        if (result) return result;
+    } else {
+        const { street, venue, city, state, zip } = input;
+
+        // Strategy 1: Full details (Street, City, State, Zip) - No Venue (often confuses basic geocoders)
+        if (street) {
+            const q = `${street}, ${city}, ${state} ${zip || ''}`;
+            const res = await tryGeocode(q, "Exact");
+            if (res) return res;
+        }
+
+        // Strategy 2: Venue + City + State (Great for famous places)
+        if (venue) {
+            const q = `${venue}, ${city}, ${state}`;
+            const res = await tryGeocode(q, "Venue");
+            if (res) return res;
+        }
+
+        // Strategy 3: City + State + Zip (Broad)
+        if (zip) {
+            const q = `${city}, ${state} ${zip}`;
+            const res = await tryGeocode(q, "Zip");
+            if (res) return res;
+        }
+
+        // Strategy 4: City + State (Broadest)
+        const q = `${city}, ${state}`;
+        const res = await tryGeocode(q, "City");
+        if (res) return res;
     }
 
     // 3. Final Fallback
