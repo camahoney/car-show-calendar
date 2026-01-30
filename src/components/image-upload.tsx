@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Image as ImageIcon, Trash, UploadCloud } from "lucide-react";
 import Image from "next/image";
@@ -16,9 +16,9 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     const [isMounted, setIsMounted] = useState(false);
 
     // Prevent hydration mismatch
-    useState(() => {
+    useEffect(() => {
         setIsMounted(true);
-    });
+    }, []);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onUpload = useCallback((result: any) => {
@@ -55,14 +55,8 @@ export function ImageUpload({ value, onChange, disabled }: ImageUploadProps) {
     return (
         <CldUploadWidget
             onSuccess={onUpload}
-            uploadPreset="car-show-calendar" // Use 'unsigned' preset or 'default' if not configured? 
-        // Note: Cloudinary usually needs an upload preset. 
-        // If the user hasn't created one, 'ml_default' often works for unsigned, but 'signed' (default in next-cloudinary?) works with API keys.
-        // Let's try Standard Mode (Signed) which uses the API keys we just added.
-        // But CldUploadWidget is client-side. It usually needs a preset OR a signature endpoint.
-        // next-cloudinary handles signature automatically if keys are in .env!
-        // BUT we need to pass `signatureEndpoint` or rely on default `/api/sign-cloudinary-params`.
-        // next-cloudinary includes a route handler helper.
+            signatureEndpoint="/api/sign-cloudinary-params"
+
         >
             {({ open }) => {
                 const onClick = () => {
