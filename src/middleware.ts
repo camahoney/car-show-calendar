@@ -7,6 +7,7 @@ export default withAuth({
 
             // Admin Protection
             if (path.startsWith("/admin")) {
+                if (path === "/admin/debug") return true; // Allow debug route
                 return token?.role === "ADMIN";
             }
 
