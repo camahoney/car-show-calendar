@@ -19,31 +19,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 1,
     }))
 
-    // 2. Dynamic Events
-    const events = await prisma.event.findMany({
-        where: { status: 'APPROVED' },
-        select: { id: true, updatedAt: true },
-    })
+    // 2. Dynamic Data (Safe Fetch)
+    let eventUrls: MetadataRoute.Sitemap = []
+    let vendorUrls: MetadataRoute.Sitemap = []
 
-    const eventUrls = events.map((event) => ({
-        url: `${baseUrl}/events/${event.id}`,
-        lastModified: event.updatedAt,
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-    }))
+    try {
+        const events = await prisma.event.findMany({
+            where: { status: 'APPROVED' },
+            select: { id: true, updatedAt: true },
+        })
 
-    // 3. Dynamic Vendors
-    const vendors = await prisma.vendor.findMany({
-        where: { verifiedStatus: 'VERIFIED' },
-        select: { slug: true, updatedAt: true },
-    })
+        eventUrls = events.map((event) => ({
+            url: `${baseUrl}/events/${event.id}`,
+            lastModified: event.updatedAt,
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+        }))
 
-    const vendorUrls = vendors.map((vendor) => ({
-        url: `${baseUrl}/vendors/${vendor.slug}`,
-        lastModified: vendor.updatedAt,
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-    }))
+        const vendors = await prisma.vendor.findMany({
+            where: { verifiedStatus: 'VERIFIED' },
+            select: { slug: true, updatedAt: true },
+        })
+
+        vendorUrls = vendors.map((vendor) => ({
+            url: `${baseUrl}/vendors/${vendor.slug}`,
+            lastModified: vendor.updatedAt,
+            changeFrequency: 'weekly' as const,
+            priority: 0.8,
+        }))
+    } catch (error) {
+        console.warn("⚠️ Sitemap generation failed to fetch dynamic data (likely build environment issues). Returning static routes only.")
+    }
 
     return [...routes, ...eventUrls, ...vendorUrls]
 }
