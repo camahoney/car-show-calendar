@@ -6,15 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
-// Mock Geocoding for now (Real Geocoding requires Mapbox/Google API Key)
-async function geocodeAddress(address: string, city: string, state: string, zip: string) {
-    // In a real app, call Mapbox/Google API here
-    // For now, return a random location near Springfield IL (center of US-ish) or 0,0
-    // to allow the app to function without keys.
-    const lat = 39.7817 + (Math.random() - 0.5) * 0.1;
-    const lng = -89.6501 + (Math.random() - 0.5) * 0.1;
-    return { lat, lng };
-}
+import { geocodeAddress } from "@/lib/geocoding";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createEvent(data: any) {
@@ -53,7 +45,9 @@ export async function createEvent(data: any) {
         });
     }
 
-    const { lat, lng } = await geocodeAddress(addressLine1, city, state, zip);
+    // Geocode with shared utility
+    const fullAddress = `${addressLine1}, ${city}, ${state} ${zip}`;
+    const { lat, lng } = await geocodeAddress(fullAddress);
 
     try {
         const event = await prisma.event.create({
@@ -149,8 +143,9 @@ export async function updateEvent(data: any) {
         }
     }
 
-    // Geocode (simplify: re-run always for now)
-    const { lat, lng } = await geocodeAddress(addressLine1, city, state, zip);
+    // Geocode (always re-run to ensure accuracy)
+    const fullAddress = `${addressLine1}, ${city}, ${state} ${zip}`;
+    const { lat, lng } = await geocodeAddress(fullAddress);
 
     try {
         await prisma.event.update({
