@@ -14,6 +14,11 @@ import { getWeather } from "@/lib/weather";
 import { WeatherWidget } from "@/components/weather-widget";
 import { ClaimEventButton } from "@/components/claim-event-button";
 
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { RSVPButton } from "@/components/rsvp-button";
+import { AttendeesList } from "@/components/attendees-list";
+
 interface PageProps {
     params: Promise<{ id: string }>;
 }
@@ -37,14 +42,34 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default async function EventPage({ params }: PageProps) {
     const { id } = await params;
+    const session = await getServerSession(authOptions);
+
     const event = await prisma.event.findUnique({
         where: { id },
         include: {
-            organizer: true
+            organizer: true,
+            rsvps: {
+                include: { vehicle: true }
+            }
         }
     });
 
     if (!event) notFound();
+
+    // User context data
+    let userVehicles: any[] = [];
+    let isAttending = false;
+
+    if (session?.user) {
+        // Check if attending
+        isAttending = event.rsvps.some(r => r.userId === session.user.id);
+
+        // Fetch garage
+        userVehicles = await prisma.vehicle.findMany({
+            where: { userId: session.user.id },
+            orderBy: { createdAt: 'desc' }
+        });
+    }
 
     const fullAddress = `${event.addressLine1}, ${event.city}, ${event.state} ${event.zip}`;
 
@@ -53,33 +78,35 @@ export default async function EventPage({ params }: PageProps) {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            {/* Background Gradient */}
-            <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" />
+            priority
+                    />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
 
-            <div className="container relative z-10 mx-auto px-4 py-8 pt-24 space-y-8">
+            <div className="container relative z-10 mx-auto px-4 py-8 pt-32 space-y-8">
 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end">
+                <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="space-y-4 max-w-3xl">
                         <div className="flex flex-wrap gap-3">
-                            <Badge variant={event.tier === 'FEATURED' ? 'default' : 'secondary'} className={event.tier === 'FEATURED' ? "bg-primary text-white" : ""}>
+                            <Badge variant={event.tier === 'FEATURED' ? 'default' : 'secondary'} className={event.tier === 'FEATURED' ? "bg-primary text-white shadow-lg shadow-primary/20 backdrop-blur-md" : "backdrop-blur-md bg-white/10 text-white"}>
                                 {event.tier === 'FEATURED' ? 'Featured Event' : 'Standard Event'}
                             </Badge>
-                            <Badge variant="outline" className="border-white/10 text-muted-foreground">
+                            <Badge variant="outline" className="border-white/10 text-gray-200 backdrop-blur-md bg-black/20">
                                 {event.judgedOrCruiseIn.replace('_', ' ')}
                             </Badge>
-                            <Badge variant="outline" className="border-white/10 text-muted-foreground">
+                            <Badge variant="outline" className="border-white/10 text-gray-200 backdrop-blur-md bg-black/20">
                                 {event.status}
                             </Badge>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight drop-shadow-2xl">
                             {event.title}
                         </h1>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-gray-400 text-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-gray-300 text-lg font-medium drop-shadow-md">
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-5 w-5 text-primary" />
                                 <span>{format(new Date(event.startDateTime), "EEEE, MMMM do, yyyy")}</span>
-                                <span className="text-sm bg-white/5 px-2 py-0.5 rounded-full">
+                                <span className="text-sm bg-white/10 px-2 py-0.5 rounded-full border border-white/5">
                                     {format(new Date(event.startDateTime), "h:mm a")} - {format(new Date(event.endDateTime), "h:mm a")}
                                 </span>
                             </div>
@@ -143,6 +170,20 @@ export default async function EventPage({ params }: PageProps) {
                             <div className="prose prose-invert max-w-none text-gray-300 whitespace-pre-line leading-relaxed">
                                 {event.description}
                             </div>
+                        </div>
+
+                        {/* Attendees Section */}
+                        <div className="glass p-6 rounded-2xl space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-2xl font-bold">Who&apos;s Going</h2>
+                                <RSVPButton
+                                    eventId={event.id}
+                                    isAttending={isAttending}
+                                    hasVehicles={userVehicles.length > 0}
+                                    userVehicles={userVehicles}
+                                />
+                            </div>
+                            <AttendeesList rsvps={event.rsvps} />
                         </div>
 
 

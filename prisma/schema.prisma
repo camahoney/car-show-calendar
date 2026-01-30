@@ -81,6 +81,8 @@ model User {
   subscriptions    Subscription[]
   reports          Report[]
   vendorReviews    VendorReview[]
+  vehicles         Vehicle[]
+  rsvps            EventRSVP[]
 }
 
 model Subscription {
@@ -225,6 +227,7 @@ model Event {
 
   votes           Vote[]
   saves           EventSave[]
+  rsvps           EventRSVP[]
   vendorAppearances VendorAppearance[]
 }
 
@@ -287,4 +290,38 @@ model Report {
   status         String       @default("OPEN") // ReportStatus
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+}
+
+model Vehicle {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  year      Int
+  make      String
+  model     String
+  nickname  String?
+  photoUrl  String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rsvps     EventRSVP[]
+}
+
+model EventRSVP {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vehicleId String?
+  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
+  
+  status    String   @default("GOING") // GOING, MAYBE
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, userId])
 }
