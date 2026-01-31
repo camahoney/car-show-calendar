@@ -205,16 +205,54 @@ export default function LeadFinderClient({
                         ) : (
                             <div className="space-y-4">
                                 {leads.length === 0 ? (
-                                    <div className="text-center py-10 text-muted-foreground">No leads found. running a scan?</div>
+                                    <div className="text-center py-10 text-muted-foreground flex flex-col items-center gap-4">
+                                        <p>No new leads found.</p>
+                                        <ScanHistoryLog history={history} />
+                                    </div>
                                 ) : (
-                                    leads.map(lead => (
-                                        <LeadCard key={lead.id} lead={lead} onStatusUpdate={handleStatusUpdate} />
-                                    ))
+                                    <>
+                                        <ScanHistoryLog history={history} collapsed />
+                                        {leads.map(lead => (
+                                            <LeadCard key={lead.id} lead={lead} onStatusUpdate={handleStatusUpdate} />
+                                        ))}
+                                    </>
                                 )}
                             </div>
                         )}
                     </CardContent>
                 </Card>
+            </div>
+        </div>
+    );
+}
+
+function ScanHistoryLog({ history, collapsed = false }: { history: any[], collapsed?: boolean }) {
+    if (!history?.length) return null;
+
+    return (
+        <div className="w-full text-sm border rounded p-3 bg-muted/30">
+            <h4 className="font-semibold mb-2 flex items-center gap-2">
+                Last Scan Results
+                {collapsed && <Badge variant="outline" className="text-xs font-normal">History</Badge>}
+            </h4>
+            <div className="space-y-2">
+                {history.slice(0, collapsed ? 1 : 3).map((run, i) => (
+                    <div key={run.id || i} className="flex flex-col gap-1 text-xs">
+                        <div className="flex justify-between">
+                            <span className="font-medium">{new Date(run.startedAt).toLocaleString()}</span>
+                            <span>Found: {run.leadsCreated} leads / {run.itemsFound} items</span>
+                        </div>
+                        {run.errors && Array.isArray(run.errors) && run.errors.length > 0 && (
+                            <div className="text-destructive pl-2 border-l-2 border-destructive/20 mt-1">
+                                {(run.errors as any[]).map((err, j) => (
+                                    <div key={j} className="truncate" title={JSON.stringify(err)}>
+                                        {err.message || err.error || JSON.stringify(err)}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     );
