@@ -220,6 +220,42 @@ function LeadFinderClient() {
 function AddSourceDialog({ onAdd }: { onAdd: (fd: FormData) => void }) {
     const [open, setOpen] = useState(false);
     const [type, setType] = useState("URL");
+    const [name, setName] = useState("");
+    const [url, setUrl] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!name || !url) {
+            toast.error("Name and URL are required");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // We construct a FormData object to pass to the parent handler
+            // ensuring compatibility with the existing interface
+            const fd = new FormData();
+            fd.append('name', name);
+            fd.append('type', type);
+            fd.append('url', url);
+
+            // await the add action
+            await onAdd(fd);
+
+            // On success
+            setOpen(false);
+            setName("");
+            setUrl("");
+            setType("URL");
+        } catch (error) {
+            console.error("Submission error:", error);
+            toast.error("Failed to add source");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -230,22 +266,18 @@ function AddSourceDialog({ onAdd }: { onAdd: (fd: FormData) => void }) {
                 <DialogHeader>
                     <DialogTitle>Add New Source</DialogTitle>
                 </DialogHeader>
-                <form action={(fd) => {
-                    // Manual validation before submit
-                    if (!fd.get('url')) {
-                        toast.error("URL is required");
-                        return;
-                    }
-                    onAdd(fd);
-                    setOpen(false);
-                }} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label>Source Name</Label>
-                        <Input name="name" placeholder="e.g. Local Car Club" required />
+                        <Input
+                            value={name}
+                            onChange={e => setName(e.target.value)}
+                            placeholder="e.g. Local Car Club"
+                            required
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label>Type</Label>
-                        <input type="hidden" name="type" value={type} />
                         <Select value={type} onValueChange={setType}>
                             <SelectTrigger>
                                 <SelectValue />
@@ -258,9 +290,17 @@ function AddSourceDialog({ onAdd }: { onAdd: (fd: FormData) => void }) {
                     </div>
                     <div className="space-y-2">
                         <Label>URL</Label>
-                        <Input name="url" placeholder="https://..." required />
+                        <Input
+                            value={url}
+                            onChange={e => setUrl(e.target.value)}
+                            placeholder="https://..."
+                            required
+                        />
                     </div>
-                    <Button type="submit" className="w-full">Save Source</Button>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        {isSubmitting ? "Saving..." : "Save Source"}
+                    </Button>
                 </form>
             </DialogContent>
         </Dialog>
