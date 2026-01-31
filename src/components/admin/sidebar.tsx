@@ -24,11 +24,7 @@ const navItems = [
         href: "/admin",
         icon: LayoutDashboard,
     },
-    {
-        title: "Lead Finder AI",
-        href: "/admin/leads",
-        icon: Sparkles,
-    },
+
     {
         title: "Event Moderation",
         href: "/admin/events",
