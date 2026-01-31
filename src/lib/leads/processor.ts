@@ -62,51 +62,55 @@ export async function processScan() {
 
                 itemsFound += textsToAnalyze.length;
 
-                // 3. Process each item with AI
+                // 3. Process each scraped page/item with AI
                 for (const item of textsToAnalyze) {
                     try {
-                        const extracted = await analyzeTextWithAI(item.text, item.link);
+                        const extractedLeads = await analyzeTextWithAI(item.text, item.link);
 
-                        if (extracted && extracted.confidence > 0) {
-                            // Calculate simple score
-                            const score = calculateScore(extracted);
+                        if (extractedLeads && extractedLeads.length > 0) {
 
-                            // Hash for dedupe
-                            const hash = createDedupeHash(extracted.title, extracted.eventDate, extracted.city);
+                            for (const lead of extractedLeads) {
+                                if (lead.confidence < 50) continue; // Skip low confidence inside the batch
 
-                            try {
-                                await prisma.lead.create({
-                                    data: {
-                                        type: extracted.type,
-                                        title: extracted.title,
-                                        summary: extracted.summary,
-                                        city: extracted.city,
-                                        state: extracted.state,
-                                        eventDate: extracted.eventDate ? new Date(extracted.eventDate) : null,
-                                        sourceName: source.name,
-                                        sourceUrl: item.link,
-                                        contactHints: extracted.contactHints as any,
-                                        confidence: extracted.confidence,
-                                        score: score,
-                                        dedupeHash: hash,
-                                        status: "NEW"
+                                // Calculate simple score
+                                const score = calculateScore(lead);
+
+                                // Hash for dedupe
+                                const hash = createDedupeHash(lead.title, lead.eventDate, lead.city);
+
+                                try {
+                                    await prisma.lead.create({
+                                        data: {
+                                            type: lead.type,
+                                            title: lead.title,
+                                            summary: lead.summary,
+                                            city: lead.city,
+                                            state: lead.state,
+                                            eventDate: lead.eventDate ? new Date(lead.eventDate) : null,
+                                            sourceName: source.name,
+                                            sourceUrl: item.link, // Link to the listicle/page
+                                            contactHints: lead.contactHints as any,
+                                            confidence: lead.confidence,
+                                            score: score,
+                                            dedupeHash: hash,
+                                            status: "NEW"
+                                        }
+                                    });
+                                    leadsCreated++;
+                                } catch (e: any) {
+                                    if (e.code === 'P2002') {
+                                        console.log(`Skipping duplicate: ${lead.title}`);
+                                    } else {
+                                        throw e;
                                     }
-                                });
-                                leadsCreated++;
-                            } catch (e: any) {
-                                if (e.code === 'P2002') {
-                                    // Duplicate found, ignore silently
-                                    console.log(`Skipping duplicate: ${extracted.title}`);
-                                } else {
-                                    throw e;
                                 }
                             }
                         } else {
                             // Log why it was skipped
-                            console.log(`Skipped item from ${source.name}: Low confidence or empty AI result.`);
+                            console.log(`Skipped item from ${source.name}: No leads found in text.`);
                             errors.push({
                                 source: source.name,
-                                message: "Skipped: AI returned low confidence or no structured data.",
+                                message: "Skipped: AI found 0 leads in content.",
                                 debugLink: item.link,
                                 textLength: item.text.length
                             });
