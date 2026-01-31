@@ -74,10 +74,6 @@ export async function processScan() {
                             // Hash for dedupe
                             const hash = createDedupeHash(extracted.title, extracted.eventDate, extracted.city);
 
-                            // Save Lead
-                            // Upsert? Or just ignore unique constraint fail?
-                            // DedupeHash is unique.
-
                             try {
                                 await prisma.lead.create({
                                     data: {
@@ -105,6 +101,15 @@ export async function processScan() {
                                     throw e;
                                 }
                             }
+                        } else {
+                            // Log why it was skipped
+                            console.log(`Skipped item from ${source.name}: Low confidence or empty AI result.`);
+                            errors.push({
+                                source: source.name,
+                                message: "Skipped: AI returned low confidence or no structured data.",
+                                debugLink: item.link,
+                                textLength: item.text.length
+                            });
                         }
                     } catch (innerError) {
                         console.error(`Error processing item from ${source.name}:`, innerError);
