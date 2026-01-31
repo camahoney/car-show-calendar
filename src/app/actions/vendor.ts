@@ -165,3 +165,21 @@ export async function toggleVendorStatus(vendorId: string, status: string) {
         return { success: false, error: "Failed to update status" };
     }
 }
+
+export async function updateVendorTier(vendorId: string, tier: string) {
+    const user = await getCurrentUser();
+    // @ts-ignore
+    if (!user || user.role !== 'ADMIN') return { success: false, error: "Unauthorized" };
+
+    try {
+        await prisma.vendor.update({
+            where: { id: vendorId },
+            data: { subscriptionTier: tier }
+        });
+        revalidatePath("/admin/vendors");
+        return { success: true };
+    } catch (error) {
+        console.error("Tier update failed:", error);
+        return { success: false, error: "Failed to update tier" };
+    }
+}

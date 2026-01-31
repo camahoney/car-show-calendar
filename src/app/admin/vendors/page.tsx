@@ -12,6 +12,7 @@ import {
 import { CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { VendorStatusToggle } from "./vendor-status-toggle";
+import { VendorTierSelect } from "./vendor-tier-select";
 
 export default async function AdminVendorsPage() {
     const result = await getAdminVendors();
@@ -78,7 +79,9 @@ export default async function AdminVendorsPage() {
                                         {vendor.verifiedStatus}
                                     </Badge>
                                 </TableCell>
-                                <TableCell className="text-gray-300">{vendor.subscriptionTier}</TableCell>
+                                <TableCell className="text-gray-300">
+                                    <VendorTierSelect vendorId={vendor.id} currentTier={vendor.subscriptionTier} />
+                                </TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex justify-end gap-2">
                                         <Button variant="ghost" size="icon" asChild>
