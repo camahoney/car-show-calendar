@@ -119,7 +119,11 @@ function LeadFinderClient() {
 
         if (!name || !url) return;
 
-        await addScanSource(name, type, url);
+        const result = await addScanSource(name, type, url);
+        if (!result.success) {
+            throw new Error(result.error || "Server action failed");
+        }
+
         toast.success("Source added");
         refreshData();
     };
@@ -249,9 +253,9 @@ function AddSourceDialog({ onAdd }: { onAdd: (fd: FormData) => void }) {
             setName("");
             setUrl("");
             setType("URL");
-        } catch (error) {
+        } catch (error: any) {
             console.error("Submission error:", error);
-            toast.error("Failed to add source");
+            toast.error(error.message || "Failed to add source");
         } finally {
             setIsSubmitting(false);
         }
