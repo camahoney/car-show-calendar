@@ -58,15 +58,23 @@ export async function getScanSources() {
 }
 
 export async function addScanSource(name: string, type: 'RSS' | 'URL', url: string) {
-    await prisma.scanSource.create({
-        data: {
-            name,
-            type,
-            config: { url },
-            enabled: true
-        }
-    });
-    revalidatePath("/admin/leads");
+    console.log("addScanSource called with:", { name, type, url });
+    try {
+        const newSource = await prisma.scanSource.create({
+            data: {
+                name,
+                type,
+                config: { url },
+                enabled: true
+            }
+        });
+        console.log("Source created:", newSource);
+        revalidatePath("/admin/leads");
+        return { success: true };
+    } catch (error) {
+        console.error("Error adding scan source:", error);
+        return { success: false, error: String(error) };
+    }
 }
 
 export async function deleteScanSource(id: string) {
