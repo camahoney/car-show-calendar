@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { createFeaturedUpgradeSession } from "@/app/actions/stripe";
 import { Sparkles, Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export function UpgradeEventButton({ eventId }: { eventId: string }) {
     const [isPending, startTransition] = useTransition();
