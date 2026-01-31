@@ -2,6 +2,7 @@
 import {
     getLeads,
     getScanSources,
+    getScanHistory
 } from "@/app/actions/leads";
 import LeadFinderClient from "./client-page";
 
@@ -10,6 +11,7 @@ export default async function LeadFinderPage() {
     // Fetch initial data on the server
     const leads = await getLeads('NEW');
     const sources = await getScanSources();
+    const history = await getScanHistory();
 
     // Pass data to Client Component
     // Casting raw Prisma objects if needed, assuming they match the type mostly
@@ -19,6 +21,7 @@ export default async function LeadFinderPage() {
         <LeadFinderClient
             initialLeads={leads as any}
             initialSources={sources as any}
+            initialHistory={history as any}
         />
     );
 }

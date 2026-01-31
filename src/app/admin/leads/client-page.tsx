@@ -13,6 +13,7 @@ import {
     getScanSources,
     addScanSource,
     deleteScanSource,
+    getScanHistory
 } from "@/app/actions/leads";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -49,15 +50,18 @@ type ScanSource = {
 
 export default function LeadFinderClient({
     initialLeads,
-    initialSources
+    initialSources,
+    initialHistory = []
 }: {
     initialLeads: Lead[],
-    initialSources: ScanSource[]
+    initialSources: ScanSource[],
+    initialHistory?: any[]
 }) {
     const [scanning, setScanning] = useState(false);
     const [leads, setLeads] = useState<Lead[]>(initialLeads);
     // Explicitly casting initialSources to any[] or ScanSource[] to match state if needed, but TS should handle it
     const [sources, setSources] = useState<ScanSource[]>(initialSources);
+    const [history, setHistory] = useState<any[]>(initialHistory);
     const [loadingData, setLoadingData] = useState(false);
     const [leadsFilter, setLeadsFilter] = useState<'NEW' | 'REVIEWED' | 'ALL'>('NEW');
 
@@ -66,12 +70,14 @@ export default function LeadFinderClient({
         setLoadingData(true);
         try {
             // Note: getLeads returns Promise<Lead[]>
-            const [l, s] = await Promise.all([
+            const [l, s, h] = await Promise.all([
                 getLeads(leadsFilter),
-                getScanSources()
+                getScanSources(),
+                getScanHistory()
             ]);
             setLeads(l as any);
             setSources(s as any);
+            setHistory(h as any);
         } catch (e) {
             console.error("Refresh error:", e);
         } finally {
