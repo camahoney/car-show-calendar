@@ -183,3 +183,20 @@ export async function updateVendorTier(vendorId: string, tier: string) {
         return { success: false, error: "Failed to update tier" };
     }
 }
+
+export async function deleteVendor(vendorId: string) {
+    const user = await getCurrentUser();
+    // @ts-ignore
+    if (!user || user.role !== 'ADMIN') return { success: false, error: "Unauthorized" };
+
+    try {
+        await prisma.vendor.delete({
+            where: { id: vendorId }
+        });
+        revalidatePath("/admin/vendors");
+        return { success: true };
+    } catch (error) {
+        console.error("Delete failed:", error);
+        return { success: false, error: "Failed to delete vendor" };
+    }
+}

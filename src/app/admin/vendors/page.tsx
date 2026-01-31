@@ -13,6 +13,8 @@ import { CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 import { VendorStatusToggle } from "./vendor-status-toggle";
 import { VendorTierSelect } from "./vendor-tier-select";
+import { VendorDeleteButton } from "./vendor-delete-button";
+import { Trash2 } from "lucide-react";
 
 export default async function AdminVendorsPage() {
     const result = await getAdminVendors();
@@ -104,6 +106,7 @@ export default async function AdminVendorsPage() {
                                             </Link>
                                         </Button>
                                         <VendorStatusToggle vendorId={vendor.id} currentStatus={vendor.verifiedStatus} />
+                                        <VendorDeleteButton vendorId={vendor.id} businessName={vendor.businessName} />
                                     </div>
                                 </TableCell>
                             </TableRow>
