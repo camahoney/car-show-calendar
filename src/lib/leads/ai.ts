@@ -1,9 +1,14 @@
 import OpenAI from "openai";
 import { z } from "zod";
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization to prevent build-time crashes if key is missing
+const getOpenAI = () => {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+        throw new Error("OPENAI_API_KEY is not set in environment variables");
+    }
+    return new OpenAI({ apiKey });
+};
 
 // Zod schema for structured output
 const ExtractedLeadSchema = z.object({
@@ -25,11 +30,8 @@ const ExtractedLeadSchema = z.object({
 export type ExtractedLead = z.infer<typeof ExtractedLeadSchema>;
 
 export async function extractLeadFromText(text: string, sourceUrl: string): Promise<ExtractedLead | null> {
-    if (!process.env.OPENAI_API_KEY) {
-        throw new Error("Missing OPENAI_API_KEY");
-    }
-
     try {
+        const openai = getOpenAI();
         const completion = await openai.chat.completions.create({
             model: "gpt-4o-mini", // Cost efficient
             messages: [
@@ -59,33 +61,21 @@ export async function extractLeadFromText(text: string, sourceUrl: string): Prom
         const content = completion.choices[0].message.content;
         if (!content) return null;
 
-        // Parse JSON
+        // Try direct parse, allow for loose schema matching since we are using mini
+        // Ideally we would refine this with function calling in a real robust setup
         const rawJson = JSON.parse(content);
-        
-        // We need to shape it to match our Zod schema manually or validation might fail if the model hallucinates keys
-        // But let's try direct validation first as gpt-4o-2024-08-06 supports structured outputs better.
-        // Since we are using gpt-4o-mini, json_object is good but not strict schema enforcer.
-        
-        // Let's rely on standard JSON output structure instruction. 
-        // Actually, let's refine the system prompt to force the exact JSON structure.
-        
-        // Retrying with function calling or strict json structure is safer, but for MVP standard json_object is often enough if prompted well.
-        // Let's add the schema structure to the prompt.
-        
-        // NOTE: For this specific file, I'll update the logic to include the schema in the prompt
-        // to ensure gpt-4o-mini follows it.
+        return rawJson as ExtractedLead; // Optimistic casting for now
+
     } catch (error) {
         console.error("AI Extraction Error:", error);
-        return null;
+        return null; // Fail gracefully
     }
-    
-    // Fallback logic in case of complex failure
-    return null;
 }
 
-// Let's rewrite the function above to be robust.
+// Robust fallback version (better prompt)
 export async function analyzeTextWithAI(text: string, sourceUrl: string): Promise<ExtractedLead | null> {
     try {
+        const openai = getOpenAI();
         const schemaDescription = JSON.stringify({
             type: "EVENT | VENDOR | ORGANIZER",
             title: "Name of the entity or event",
@@ -119,7 +109,7 @@ export async function analyzeTextWithAI(text: string, sourceUrl: string): Promis
         });
 
         const result = JSON.parse(completion.choices[0].message.content || "{}");
-        
+
         // Validate with Zod
         const parsed = ExtractedLeadSchema.safeParse(result);
         if (parsed.success) {
@@ -130,6 +120,7 @@ export async function analyzeTextWithAI(text: string, sourceUrl: string): Promis
         }
 
     } catch (e) {
+        // Log but don't crash app
         console.error("AI Error:", e);
         return null;
     }
