@@ -11,6 +11,13 @@ export async function scrapeUrlText(url: string): Promise<string> {
         });
 
         if (!response.ok) {
+            // If failed (403/Forbidden especially), try Firecrawl if API key exists
+            if (response.status === 403 || response.status === 401) {
+                if (process.env.FIRECRAWL_API_KEY) {
+                    console.log(`Basic fetch failed (${response.status}), attempting Firecrawl for ${url}`);
+                    return await scrapeWithFirecrawl(url);
+                }
+            }
             throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
         }
 
@@ -21,7 +28,6 @@ export async function scrapeUrlText(url: string): Promise<string> {
         $('script, style, nav, footer, iframe, svg').remove();
 
         // extract text from body
-        // We want to preserve some structure hopefully, but raw text is usually okay for LLM
         const text = $('body').text();
 
         // Clean up whitespace
@@ -30,4 +36,29 @@ export async function scrapeUrlText(url: string): Promise<string> {
         console.error(`Error scraping URL ${url}:`, error);
         throw error;
     }
+}
+
+async function scrapeWithFirecrawl(url: string): Promise<string> {
+    const firecrawlKey = process.env.FIRECRAWL_API_KEY;
+    if (!firecrawlKey) throw new Error("Firecrawl API Key missing");
+
+    const fcResponse = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${firecrawlKey}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            url: url,
+            formats: ["markdown"]
+        })
+    });
+
+    if (!fcResponse.ok) {
+        const errText = await fcResponse.text();
+        throw new Error(`Firecrawl failed: ${fcResponse.status} ${errText}`);
+    }
+
+    const data = await fcResponse.json();
+    return data.data?.markdown || "";
 }

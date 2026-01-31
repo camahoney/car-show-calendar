@@ -249,10 +249,12 @@ function ScanHistoryLog({ history, collapsed = false }: { history: any[], collap
                             <span>Found: {run.leadsCreated} leads / {run.itemsFound} items</span>
                         </div>
                         {run.errors && Array.isArray(run.errors) && run.errors.length > 0 && (
-                            <div className="text-destructive pl-2 border-l-2 border-destructive/20 mt-1">
+                            <div className="text-destructive pl-2 border-l-2 border-destructive/20 mt-1 space-y-1">
                                 {(run.errors as any[]).map((err, j) => (
                                     <div key={j} className="truncate" title={JSON.stringify(err)}>
+                                        <span className="font-semibold text-foreground/80">[{err.source || 'Unknown'}]: </span>
                                         {err.message || err.error || JSON.stringify(err)}
+                                        {err.debugLink && <span className="text-muted-foreground ml-1">({err.debugLink})</span>}
                                     </div>
                                 ))}
                             </div>
