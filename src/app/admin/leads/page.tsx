@@ -219,6 +219,8 @@ function LeadFinderClient() {
 
 function AddSourceDialog({ onAdd }: { onAdd: (fd: FormData) => void }) {
     const [open, setOpen] = useState(false);
+    const [type, setType] = useState("URL");
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -228,14 +230,23 @@ function AddSourceDialog({ onAdd }: { onAdd: (fd: FormData) => void }) {
                 <DialogHeader>
                     <DialogTitle>Add New Source</DialogTitle>
                 </DialogHeader>
-                <form action={(fd) => { onAdd(fd); setOpen(false); }} className="space-y-4">
+                <form action={(fd) => {
+                    // Manual validation before submit
+                    if (!fd.get('url')) {
+                        toast.error("URL is required");
+                        return;
+                    }
+                    onAdd(fd);
+                    setOpen(false);
+                }} className="space-y-4">
                     <div className="space-y-2">
                         <Label>Source Name</Label>
                         <Input name="name" placeholder="e.g. Local Car Club" required />
                     </div>
                     <div className="space-y-2">
                         <Label>Type</Label>
-                        <Select name="type" defaultValue="URL">
+                        <input type="hidden" name="type" value={type} />
+                        <Select value={type} onValueChange={setType}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>
