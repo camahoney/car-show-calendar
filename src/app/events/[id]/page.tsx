@@ -18,6 +18,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { RSVPButton } from "@/components/rsvp-button";
 import { AttendeesList } from "@/components/attendees-list";
+import { EventGallery } from "@/components/event-gallery";
+import { UpgradeEventButton } from "@/components/upgrade-event-button";
 
 interface PageProps {
     params: Promise<{ id: string }>;
