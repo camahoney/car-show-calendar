@@ -61,10 +61,6 @@ export default async function EventPage({ params }: PageProps) {
 
     if (!event) notFound();
 
-    console.log("[EventPage] Loading event:", event.id, event.title);
-    console.log("[EventPage] Links:", { web: event.websiteUrl, fb: event.facebookUrl, reg: event.registrationUrl });
-
-
     // User context data
     let userVehicles: any[] = [];
     let isAttending = false;
@@ -168,6 +164,16 @@ export default async function EventPage({ params }: PageProps) {
                                     priority
                                     className="object-contain bg-black/40"
                                 />
+                                {event.isPreRelease && (
+                                    <div className="absolute top-4 right-4 z-20 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none drop-shadow-xl transform rotate-12">
+                                        <Image
+                                            src="/images/pre-release-badge.jpg"
+                                            alt="Pre-Release Listing"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-xl ring-1 ring-white/10 bg-card/10 flex items-center justify-center">
