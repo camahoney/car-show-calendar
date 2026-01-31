@@ -345,3 +345,57 @@ model EventPhoto {
 
   @@index([eventId])
 }
+
+// --- AI LEAD FINDER MODELS ---
+
+model Lead {
+  id            String   @id @default(cuid())
+  type          String   // EVENT, VENDOR, ORGANIZER
+  title         String
+  summary       String?  @db.Text
+  city          String?
+  state         String?
+  eventDate     DateTime?
+  sourceName    String
+  sourceUrl     String
+  contactHints  Json?    // { emails: [], phones: [], websites: [], socials: [] }
+  confidence    Int      // 0-100
+  score         Float    @default(0) // Calculated priority score
+  status        String   @default("NEW") // NEW, REVIEWED, CONTACTED, IGNORED, CONVERTED
+  dedupeHash    String   @unique
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  actionLogs    LeadActionLog[]
+}
+
+model ScanSource {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // RSS, URL
+  config      Json     // { url: "...", keywords: [] }
+  enabled     Boolean  @default(true)
+  lastRunAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScanRun {
+  id             String   @id @default(cuid())
+  startedAt      DateTime @default(now())
+  finishedAt     DateTime?
+  sourcesScanned Int      @default(0)
+  itemsFound     Int      @default(0)
+  leadsCreated   Int      @default(0)
+  errors         Json?
+}
+
+model LeadActionLog {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  action    String   // REVIEW, CONTACTED, IGNORE, CREATE_DRAFT_EVENT
+  note      String?  @db.Text
+  createdAt DateTime @default(now())
+}

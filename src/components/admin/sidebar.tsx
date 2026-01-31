@@ -13,7 +13,8 @@ import {
     FileText,
     CheckCircle,
     UploadCloud,
-    Store
+    Store,
+    Sparkles
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -22,6 +23,11 @@ const navItems = [
         title: "Overview",
         href: "/admin",
         icon: LayoutDashboard,
+    },
+    {
+        title: "Lead Finder AI",
+        href: "/admin/leads",
+        icon: Sparkles,
     },
     {
         title: "Event Moderation",
