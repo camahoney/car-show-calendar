@@ -26,7 +26,7 @@ export async function createEvent(data: any) {
         addressLine1, city, state, zip, rainDatePolicy, rainDate,
         entryFee, spectatorFee, vehicleRequirements, judgedOrCruiseIn,
         charityBeneficiary, contactEmail, contactPhone,
-        websiteUrl, facebookUrl, registrationUrl, posterUrl, votingEnabled
+        websiteUrl, facebookUrl, registrationUrl, posterUrl, votingEnabled, isPreRelease
     } = result.data;
 
     // Ensure Organizer Profile exists
@@ -83,6 +83,7 @@ export async function createEvent(data: any) {
                 registrationUrl,
                 posterUrl,
                 votingEnabled,
+                isPreRelease,
                 status: "SUBMITTED", // Default to submitted state
                 tier: "FREE_BASIC"
             }
@@ -120,7 +121,7 @@ export async function updateEvent(data: any) {
         addressLine1, city, state, zip, rainDatePolicy, rainDate,
         entryFee, spectatorFee, vehicleRequirements, judgedOrCruiseIn,
         charityBeneficiary, contactEmail, contactPhone,
-        websiteUrl, facebookUrl, registrationUrl, posterUrl, votingEnabled
+        websiteUrl, facebookUrl, registrationUrl, posterUrl, votingEnabled, isPreRelease
     } = result.data;
 
     // Check ownership
@@ -131,19 +132,12 @@ export async function updateEvent(data: any) {
 
     if (!existingEvent) return { error: "Event not found" };
 
-    // Check if user is the organizer (via OrganizerProfile)
-    // existingEvent.organizerId is profile ID, session.user.id is User ID.
-    // need to check if existingEvent.organizer.userId === session.user.id
-    // But I didn't verify existingEvent.organizer definition fully.
-    // Let's assume organizer relation exists.
-
-    // Simpler: Fetch organizer profile for current user
+    // Check ownership logic...
     const organizerProfile = await prisma.organizerProfile.findUnique({
         where: { userId: session.user.id }
     });
 
     if (!organizerProfile || existingEvent.organizerId !== organizerProfile.id) {
-        // Allow Admin override
         if (session.user.role !== "ADMIN") {
             return { error: "Unauthorized: You do not own this event" };
         }
@@ -187,6 +181,7 @@ export async function updateEvent(data: any) {
                 registrationUrl,
                 posterUrl,
                 votingEnabled,
+                isPreRelease,
             }
         });
 
