@@ -255,6 +255,11 @@ function ScanHistoryLog({ history, collapsed = false }: { history: any[], collap
                                         <span className="font-semibold text-foreground/80">[{err.source || 'Unknown'}]: </span>
                                         {err.message || err.error || JSON.stringify(err)}
                                         {err.debugLink && <span className="text-muted-foreground ml-1">({err.debugLink})</span>}
+                                        {err.textLength !== undefined && (
+                                            <div className="text-[10px] text-muted-foreground ml-2 font-mono">
+                                                Length: {err.textLength} chars | Preview: {err.textPreview}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
