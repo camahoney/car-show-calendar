@@ -59,6 +59,10 @@ export default async function EventPage({ params }: PageProps) {
 
     if (!event) notFound();
 
+    console.log("[EventPage] Loading event:", event.id, event.title);
+    console.log("[EventPage] Links:", { web: event.websiteUrl, fb: event.facebookUrl, reg: event.registrationUrl });
+
+
     // User context data
     let userVehicles: any[] = [];
     let isAttending = false;
