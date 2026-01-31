@@ -60,7 +60,7 @@ export default function PricingPage() {
                                     <CardDescription>Essential tools for event growth.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1">
-                                    <div className="text-4xl font-bold mb-6 text-green-400">$0<span className="text-lg font-normal text-muted-foreground line-through ml-2">$29</span></div>
+                                    <div className="text-4xl font-bold mb-6 text-green-400">$29<span className="text-lg font-normal text-muted-foreground line-through ml-2">$49</span></div>
                                     <ul className="space-y-3 text-sm">
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-primary" /> <b>Full Event Page</b></li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-primary" /> Event Poster & Gallery</li>
