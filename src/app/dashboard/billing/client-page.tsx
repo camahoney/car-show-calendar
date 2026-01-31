@@ -3,28 +3,21 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Loader2, Crown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { activateStandardListing } from "@/app/actions/billing";
+import { createStandardUpgradeSession, createFeaturedUpgradeSession } from "@/app/actions/stripe";
 
 interface BillingClientProps {
     isVerifiedOrganizer: boolean;
     isProVendor: boolean;
-    // We might need to select an event to upgrade? 
-    // The current UI assumes we just buy a credit or upgrade a specific event? 
-    // The Stripe checkout takes eventId. The UI needs to know WHICH event to upgrade.
-    // If this page is generic billing, it's hard to upgrade a specific event.
-    // Typically users click "Upgrade" from the Event list. 
-    // For now, let's assume the flow is generic or we just pass a query param?
 }
-
-// In a real app, we'd pass the eventId via query param or have a selector.
-// For now, let's assume the user is upgrading from the dashboard event list link: /dashboard/billing?eventId=xyz&type=EVENT_STANDARD
 
 export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClientProps) {
     const [loading, setLoading] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -51,17 +44,16 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
         }
 
         setLoading(type);
+
         try {
-            const res = await fetch("/api/stripe/checkout", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ type, eventId }),
-            });
-
-            if (!res.ok) throw new Error("Network response was not ok");
-
-            const { url } = await res.json();
-            window.location.href = url;
+            if (type === "EVENT_STANDARD" && eventId) {
+                await createStandardUpgradeSession(eventId);
+            } else if (type === "EVENT_FEATURED" && eventId) {
+                await createFeaturedUpgradeSession(eventId);
+            } else {
+                toast.error("Organizer/Vendor subscription checkout not yet implemented in this demo.");
+                setLoading(null);
+            }
         } catch (error) {
             console.error(error);
             toast.error("Something went wrong. Please try again.");
@@ -147,9 +139,9 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                         </CardHeader>
                         <CardContent className="flex-1">
                             {isVerifiedOrganizer ? (
-                                <div className="text-4xl font-bold text-green-400">$0<span className="text-lg font-normal text-muted-foreground line-through ml-2">$29</span></div>
+                                <div className="text-4xl font-bold text-green-400">$29<span className="text-lg font-normal text-muted-foreground line-through ml-2">$49</span></div>
                             ) : (
-                                <div className="text-4xl font-bold">$29<span className="text-lg font-normal text-muted-foreground">/event</span></div>
+                                <div className="text-4xl font-bold">$29<span className="text-lg font-normal text-muted-foreground line-through ml-2">$49</span></div>
                             )}
                             <ul className="mt-6 space-y-3 text-sm">
                                 <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-primary" /> Full Details Page</li>
@@ -189,7 +181,7 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                             {isVerifiedOrganizer ? (
                                 <div className="text-4xl font-bold text-orange-400">$59<span className="text-lg font-normal text-muted-foreground line-through ml-2">$99</span></div>
                             ) : (
-                                <div className="text-4xl font-bold">$99<span className="text-lg font-normal text-muted-foreground">/event</span></div>
+                                <div className="text-4xl font-bold">$59<span className="text-lg font-normal text-muted-foreground line-through ml-2">$99</span></div>
                             )}
                             <ul className="mt-6 space-y-3 text-sm">
                                 <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> <b>Homepage Feature Spot</b></li>
@@ -201,7 +193,7 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                         <CardFooter>
                             <Button
                                 className="w-full font-bold bg-gradient-to-r from-orange-600 to-red-600 border-none hover:opacity-90"
-                                onClick={() => handleCheckout("EVENT_FEATURED")} // TODO: Need a different price ID for discounted rate? Or handling via coupon? For now, standard price, but let's assume discount code applied automatically later
+                                onClick={() => handleCheckout("EVENT_FEATURED")}
                                 disabled={!!loading}
                             >
                                 {loading === "EVENT_FEATURED" ? <Loader2 className="animate-spin" /> : "Go Featured"}
