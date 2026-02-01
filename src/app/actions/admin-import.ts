@@ -50,29 +50,29 @@ export async function importEvents(jsonString: string) {
                 return undefined;
             };
             return {
-                title: get(["event_name", "title", "name", "Event Name"]),
-                venue: get(["venue_name", "venue", "location", "Venue"]),
-                street: get(["address_street", "address", "street", "Address"]),
+                title: get(["event_name", "title", "name", "Event Name", "Name"]),
+                venue: get(["venue_name", "venue", "location", "Venue", "Location"]),
+                street: get(["address_street", "address", "street", "Address", "Street"]),
                 city: get(["address_city", "city", "City"]),
-                state: get(["address_state", "state", "State"]),
-                zip: get(["address_zip", "zip", "Zip"]),
-                startDate: get(["start_date", "startDate", "starts"]),
-                startTime: get(["start_time", "startTime"]),
-                endDate: get(["end_date", "endDate", "ends"]),
-                endTime: get(["end_time", "endTime"]),
-                entryFee: get(["entry_fee", "entryFee", "cost", "fee"]),
+                state: get(["address_state", "state", "State", "Province"]),
+                zip: get(["address_zip", "zip", "Zip", "Postal Code"]),
+                startDate: get(["start_date", "startDate", "starts", "Date", "Event Date"]),
+                startTime: get(["start_time", "startTime", "Time", "Start Time"]),
+                endDate: get(["end_date", "endDate", "ends", "End Date"]),
+                endTime: get(["end_time", "endTime", "End Time"]),
+                entryFee: get(["entry_fee", "entryFee", "cost", "fee", "Price"]),
                 spectatorFee: get(["spectator_fee", "spectatorFee"]),
-                url: get(["source_url", "url", "website", "link"]),
-                email: get(["contact_email", "email", "contact"]),
-                phone: get(["contact_phone", "phone"]),
-                desc: get(["description", "desc", "details"])
+                url: get(["source_url", "url", "website", "link", "Website", "URL"]),
+                email: get(["contact_email", "email", "contact", "Contact Email"]),
+                phone: get(["contact_phone", "phone", "Contact Phone"]),
+                desc: get(["description", "desc", "details", "Description"])
             };
         };
 
         const d = normalize(e);
 
         if (!d.title) {
-            results.push({ name: "Unknown", success: false, error: "Missing Title" });
+            results.push({ name: JSON.stringify(e).slice(0, 20) + "...", success: false, error: "Missing Title" });
             continue;
         }
 
@@ -119,7 +119,7 @@ export async function importEvents(jsonString: string) {
                     venueName: d.venue || d.city || "TBD",
                     addressLine1: d.street || "",
                     city: d.city || "Unknown",
-                    state: d.state || "MO", // Default to MO if missing? Or leave empty? Validation requires length 2.
+                    state: d.state || "MO",
                     zip: d.zip || "00000",
                     latitude: lat,
                     longitude: lng,
@@ -134,11 +134,11 @@ export async function importEvents(jsonString: string) {
                     tier: "FREE_BASIC"
                 }
             });
-            results.push({ name: e.event_name, success: true, loc: `${lat},${lng} (${source})` });
+            results.push({ name: d.title, success: true, loc: `${lat},${lng} (${source})` });
         } catch (err) {
-            console.error("Failed to import event:", e.event_name, err);
+            console.error("Failed to import event:", d.title, err);
             results.push({
-                name: e.event_name,
+                name: d.title,
                 success: false,
                 error: err instanceof Error ? err.message : "Unknown DB Error"
             });
