@@ -37,7 +37,7 @@ export async function submitContactForm(prevState: any, formData: FormData) {
         // Using string concatenation for simplicity in text content
         await resend.emails.send({
             from: "Car Show Calendar <onboarding@resend.dev>", // Or verified domain
-            to: "cmahoney06@gmail.com", // HARDCODED for now based on user context? Or logic? 
+            to: process.env.ADMIN_EMAIL || "cmahoney06@gmail.com",
             // Better: Use the support email from settings, or fall back to env var?
             // For now, I'll assume the user's email or a generic one.
             // Actually, I'll send it to the address configured in settings?
