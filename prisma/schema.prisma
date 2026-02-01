@@ -26,18 +26,18 @@ datasource db {
 // Models
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -70,8 +70,8 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
+  accounts         Account[]
+  sessions         Session[]
   profile          Profile?
   organizerProfile OrganizerProfile?
   vendor           Vendor?
@@ -87,15 +87,15 @@ model User {
 }
 
 model Subscription {
-  id                   String   @id @default(cuid())
-  userId               String
-  user                 User     @relation(fields: [userId], references: [id])
-  stripeSubscriptionId String   @unique
-  stripePriceId        String
+  id                     String   @id @default(cuid())
+  userId                 String
+  user                   User     @relation(fields: [userId], references: [id])
+  stripeSubscriptionId   String   @unique
+  stripePriceId          String
   stripeCurrentPeriodEnd DateTime
-  status               String   // active, past_due, canceled
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  status                 String // active, past_due, canceled
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }
 
 model Profile {
@@ -110,70 +110,70 @@ model Profile {
 }
 
 model OrganizerProfile {
-  id             String         @id @default(cuid())
-  userId         String         @unique
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   organizerName  String
   phone          String?
   website        String?
-  verifiedStatus String         @default("UNVERIFIED") // VerifiedStatus
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  verifiedStatus String   @default("UNVERIFIED") // VerifiedStatus
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   events Event[]
 }
 
 model Vendor {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   businessName String
-  slug        String   @unique
-  description String?
-  logoUrl     String?
-  bannerUrl   String?
-  category    VendorCategory
-  website     String?
-  instagram   String?
-  phone       String?
-  email       String?
-  address     String?
-  city        String?
-  state       String?
-  
-  verifiedStatus String   @default("UNVERIFIED") // VerifiedStatus
+  slug         String         @unique
+  description  String?
+  logoUrl      String?
+  bannerUrl    String?
+  category     VendorCategory
+  website      String?
+  instagram    String?
+  phone        String?
+  email        String?
+  address      String?
+  city         String?
+  state        String?
+
+  verifiedStatus   String @default("UNVERIFIED") // VerifiedStatus
   subscriptionTier String @default("FREE") // SubscriptionTier
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   appearances VendorAppearance[]
   reviews     VendorReview[]
 }
 
 model VendorReview {
-    id        String   @id @default(cuid())
-    vendorId  String
-    vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
-    userId    String
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    
-    rating    Int
-    comment   String?
-    createdAt DateTime @default(now())
-    
-    @@unique([vendorId, userId])
+  id       String @id @default(cuid())
+  vendorId String
+  vendor   Vendor @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([vendorId, userId])
 }
 
 enum VendorCategory {
-    DETAILING
-    PERFORMANCE
-    MECHANIC
-    PHOTOGRAPHY
-    MERCHANDISE
-    FOOD_DRINK
-    OTHER
+  DETAILING
+  PERFORMANCE
+  MECHANIC
+  PHOTOGRAPHY
+  MERCHANDISE
+  FOOD_DRINK
+  OTHER
 }
 
 model Event {
@@ -181,8 +181,8 @@ model Event {
   organizerId String
   organizer   OrganizerProfile @relation(fields: [organizerId], references: [id])
 
-  title       String
-  description String
+  title         String
+  description   String
   startDateTime DateTime
   endDateTime   DateTime
 
@@ -194,15 +194,15 @@ model Event {
   latitude     Float
   longitude    Float
 
-  rainDatePolicy String @default("NONE") // RainDatePolicy
+  rainDatePolicy String    @default("NONE") // RainDatePolicy
   rainDate       DateTime?
 
-  entryFee     Float?
-  entryFeeMax  Float?
-  spectatorFee Float?
-  spectatorFeeMax Float?
+  entryFee            Float?
+  entryFeeMax         Float?
+  spectatorFee        Float?
+  spectatorFeeMax     Float?
   vehicleRequirements String?
-  judgedOrCruiseIn    String @default("BOTH") // EventType
+  judgedOrCruiseIn    String  @default("BOTH") // EventType
   charityBeneficiary  String?
 
   contactEmail String?
@@ -212,12 +212,12 @@ model Event {
   websiteUrl      String?
   facebookUrl     String?
   registrationUrl String?
-  
+
   posterUrl String // Required
 
-  status String    @default("DRAFT") // EventStatus
-  tier   String    @default("FREE_BASIC") // EventTier
-  
+  status String @default("DRAFT") // EventStatus
+  tier   String @default("FREE_BASIC") // EventTier
+
   featuredUntil DateTime?
   votingEnabled Boolean   @default(true)
   isClaimable   Boolean   @default(false)
@@ -226,12 +226,12 @@ model Event {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  views     Int      @default(0)
-  clicks    Int      @default(0)
+  views  Int @default(0)
+  clicks Int @default(0)
 
-  votes           Vote[]
-  saves           EventSave[]
-  rsvps           EventRSVP[]
+  votes             Vote[]
+  saves             EventSave[]
+  rsvps             EventRSVP[]
   vendorAppearances VendorAppearance[]
   photos            EventPhoto[]
 }
@@ -259,59 +259,59 @@ model EventSave {
 }
 
 model VendorAppearance {
-  id        String        @id @default(cuid())
+  id        String   @id @default(cuid())
   eventId   String
-  event     Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   vendorId  String
-  vendor    Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  vendor    Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
   boothInfo String?
-  isBoosted Boolean       @default(false)
-  createdAt DateTime      @default(now())
+  isBoosted Boolean  @default(false)
+  createdAt DateTime @default(now())
 
   @@unique([eventId, vendorId])
 }
 
 model Purchase {
-  id              String         @id @default(cuid())
+  id              String   @id @default(cuid())
   userId          String
-  user            User           @relation(fields: [userId], references: [id])
-  type            String         // PurchaseType
-  stripeSessionId String?        @unique
+  user            User     @relation(fields: [userId], references: [id])
+  type            String // PurchaseType
+  stripeSessionId String?  @unique
   amount          Float
-  status          String         @default("PENDING") // PurchaseStatus
-  metadata        String?        // Json not supported in SQLite? actually it is supported by Prisma but mapped to String in DB often. We'll use String for safety.
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  status          String   @default("PENDING") // PurchaseStatus
+  metadata        String? // Json not supported in SQLite? actually it is supported by Prisma but mapped to String in DB often. We'll use String for safety.
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Report {
-  id             String       @id @default(cuid())
+  id             String   @id @default(cuid())
   reporterUserId String
-  reporter       User         @relation(fields: [reporterUserId], references: [id])
-  targetType     String       // TargetType
+  reporter       User     @relation(fields: [reporterUserId], references: [id])
+  targetType     String // TargetType
   targetId       String
   reason         String
   notes          String?
-  status         String       @default("OPEN") // ReportStatus
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  status         String   @default("OPEN") // ReportStatus
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Vehicle {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  year      Int
-  make      String
-  model     String
-  nickname  String?
-  photoUrl  String?
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  year     Int
+  make     String
+  model    String
+  nickname String?
+  photoUrl String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  rsvps     EventRSVP[]
+  rsvps EventRSVP[]
 }
 
 model EventRSVP {
@@ -322,9 +322,9 @@ model EventRSVP {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id])
-  
-  status    String   @default("GOING") // GOING, MAYBE
-  
+
+  status String @default("GOING") // GOING, MAYBE
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -332,22 +332,21 @@ model EventRSVP {
 }
 
 model EventPhoto {
-  id        String   @id @default(cuid())
-  eventId   String
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  url       String
-  caption   String?
-  status    String   @default("APPROVED") // APPROVED, REJECTED (Auto-approve for MVP)
-  
+  id      String @id @default(cuid())
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  url     String
+  caption String?
+  status  String  @default("APPROVED") // APPROVED, REJECTED (Auto-approve for MVP)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([eventId])
 }
-
 
 // (Removed AI Lead Finder Models)
 

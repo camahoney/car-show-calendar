@@ -30,6 +30,7 @@ export const eventSchema = z.object({
     posterUrl: z.string().min(1, "Poster image is required"),
     votingEnabled: z.boolean().default(true),
     isPreRelease: z.boolean().default(false),
+    source: z.string().default("USER"),
 });
 
 export type EventFormValues = z.infer<typeof eventSchema>;

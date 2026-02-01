@@ -78,7 +78,8 @@ function ScraperView() {
                     addressLine1: res.data.location || "",
                     // Parse date if possible, otherwise leave empty for user
                     websiteUrl: url,
-                    isUsingScraper: true, // Flag for badge?
+                    isPreRelease: false,
+                    source: "SCRAPER", // Flag for badge
                 });
                 setIsDialogOpen(true);
             } else {

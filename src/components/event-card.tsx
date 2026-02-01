@@ -58,6 +58,15 @@ export function EventCard({ event }: EventCardProps) {
                         </div>
                     )}
 
+                    {/* Added by AutoShow Badge */}
+                    {!isFeatured && !event.isPreRelease && event.source === "SCRAPER" && (
+                        <div className="absolute top-3 right-3">
+                            <Badge variant="secondary" className="bg-blue-500/90 hover:bg-blue-600 font-bold text-white shadow-lg shadow-blue-500/20 border-0 backdrop-blur-md">
+                                Recommended
+                            </Badge>
+                        </div>
+                    )}
+
                     {/* Expiration Countdown (Free Listings Only) */}
                     {isFree && (
                         <div className="absolute bottom-3 right-3 z-10">

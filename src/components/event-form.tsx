@@ -56,7 +56,9 @@ export function EventForm({ initialData }: EventFormProps) {
             websiteUrl: "",
             facebookUrl: "",
             registrationUrl: "",
+            registrationUrl: "",
             isPreRelease: false,
+            source: "USER",
         },
     });
 
