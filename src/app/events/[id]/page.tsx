@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { EventMap } from "@/components/event-map";
 import { AddToCalendar } from "@/components/add-to-calendar";
 import { ShareButtons } from "@/components/share-buttons";
+import { FormattedDate } from "@/components/formatted-date";
 import { ViewTracker } from "@/components/view-tracker";
 import { getWeather } from "@/lib/weather";
 import { WeatherWidget } from "@/components/weather-widget";
@@ -123,9 +124,11 @@ export default async function EventPage({ params }: PageProps) {
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-gray-300 text-lg font-medium drop-shadow-md">
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-5 w-5 text-primary" />
-                                <span>{format(new Date(event.startDateTime), "EEEE, MMMM do, yyyy")}</span>
-                                <span className="text-sm bg-white/10 px-2 py-0.5 rounded-full border border-white/5">
-                                    {format(new Date(event.startDateTime), "h:mm a")} - {format(new Date(event.endDateTime), "h:mm a")}
+                                <FormattedDate date={event.startDateTime} dateFormat="EEEE, MMMM do, yyyy" />
+                                <span className="text-sm bg-white/10 px-2 py-0.5 rounded-full border border-white/5 flex items-center gap-1">
+                                    <FormattedDate date={event.startDateTime} dateFormat="h:mm a" />
+                                    <span>-</span>
+                                    <FormattedDate date={event.endDateTime} dateFormat="h:mm a" />
                                 </span>
                             </div>
                             <div className="hidden sm:block text-white/10">•</div>

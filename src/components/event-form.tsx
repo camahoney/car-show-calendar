@@ -261,26 +261,7 @@ export function EventForm({ initialData }: EventFormProps) {
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
-                            name="entryFeeMax"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Max Entry Fee ($) <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            min="0"
-                                            placeholder="Max"
-                                            {...field}
-                                            onChange={e => field.onChange(e.target.value ? e.target.valueAsNumber : null)}
-                                            value={field.value || ""}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+
                         <FormField
                             control={form.control}
                             name="entryFeeMax"

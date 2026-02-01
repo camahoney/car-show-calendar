@@ -37,7 +37,7 @@ export function EventMap({ lat, lng, address, venueName }: EventMapProps) {
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
                 src={`https://maps.google.com/maps?q=${encodeURIComponent((venueName ? venueName + " " : "") + address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                className="w-full h-full opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0"
+                className="w-full h-full opacity-80 group-hover:opacity-100 transition-opacity duration-500 grayscale group-hover:grayscale-0 relative z-10 bg-muted"
             />
 
             {/* Overlay Button */}

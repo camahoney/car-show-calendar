@@ -68,7 +68,7 @@ export function EventCard({ event }: EventCardProps) {
 
                 {/* Content Section */}
                 <div className="p-5 flex flex-col gap-3">
-                    <h3 className="text-xl font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                    <h3 className="text-xl font-bold leading-normal break-words line-clamp-2 group-hover:text-primary transition-colors" title={event.title}>
                         {event.title}
                     </h3>
 
