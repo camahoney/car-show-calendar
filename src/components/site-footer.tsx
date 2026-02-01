@@ -38,9 +38,10 @@ export function SiteFooter() {
                         <h3 className="font-bold text-white">Company</h3>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-                            <li><Link href="#" className="hover:text-primary transition-colors">Contact Support</Link></li>
-                            <li><Link href="#" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="#" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+                            <li><Link href="mailto:support@carshowcalendar.com" className="hover:text-primary transition-colors">Contact Support</Link></li>
+                            <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+                            <li><Link href="/refund-policy" className="hover:text-primary transition-colors">Refund Policy</Link></li>
                         </ul>
                     </div>
 
@@ -48,15 +49,15 @@ export function SiteFooter() {
                     <div className="space-y-4">
                         <h3 className="font-bold text-white">Connect</h3>
                         <div className="flex space-x-4">
-                            <Link href="#" className="text-muted-foreground hover:text-white transition-colors">
+                            <Link href="https://facebook.com/carshowcalendar" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
                                 <Facebook className="h-5 w-5" />
                                 <span className="sr-only">Facebook</span>
                             </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-white transition-colors">
+                            <Link href="https://twitter.com/carshowcalendar" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
                                 <Twitter className="h-5 w-5" />
                                 <span className="sr-only">Twitter</span>
                             </Link>
-                            <Link href="#" className="text-muted-foreground hover:text-white transition-colors">
+                            <Link href="https://instagram.com/carshowcalendar" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
                                 <Instagram className="h-5 w-5" />
                                 <span className="sr-only">Instagram</span>
                             </Link>
