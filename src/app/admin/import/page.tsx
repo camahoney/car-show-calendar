@@ -90,6 +90,14 @@ function ScraperView() {
                     websiteUrl: d.website || url,
                     isPreRelease: false,
                     source: "SCRAPER", // Flag for badge
+                    // Defaults for required enums/numbers
+                    rainDatePolicy: "NONE",
+                    judgedOrCruiseIn: "BOTH",
+                    entryFee: 0,
+                    spectatorFee: 0,
+                    votingEnabled: true,
+                    contactEmail: "",
+                    contactPhone: ""
                 });
                 setIsDialogOpen(true);
             } else {
