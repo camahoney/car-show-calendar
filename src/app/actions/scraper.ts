@@ -80,24 +80,21 @@ export async function extractEventDetails(url: string) {
             required: ["title", "date", "location"]
         };
 
+        // Use v1/v2 extract method
         // @ts-ignore
-        const extractResult = await app.scrape(url, {
-            formats: ["extract"],
-            extract: {
-                schema: schema
-            }
+        const extractResult = await app.extract([url], {
+            schema: schema,
+            prompt: "Extract event details from this page."
         });
 
-        // Handle response
-        // @ts-ignore
-        const data = extractResult.extract || extractResult.data || extractResult;
-
-        if (!data && !extractResult.success) {
+        if (!extractResult.success) {
             return { success: false, error: extractResult.error || "Extraction failed" };
         }
 
-        // If data is just the object, return it.
-        return { success: true, data: data };
+        // extractResult.data is the payload.
+        // Since we passed an array of URLs, data might be an object or array? 
+        // Docs say success response has data.
+        return { success: true, data: extractResult.data };
 
     } catch (error: any) {
         console.error("Firecrawl Extract Error:", error);
