@@ -165,12 +165,12 @@ export default async function EventPage({ params }: PageProps) {
                                     className="object-contain bg-black/40"
                                 />
                                 {event.isPreRelease && (
-                                    <div className="absolute top-4 right-4 z-20 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none drop-shadow-xl">
+                                    <div className="absolute top-6 right-6 z-20 w-24 h-24 sm:w-32 sm:h-32 pointer-events-none drop-shadow-xl transform rotate-45">
                                         <Image
                                             src="/images/pre-release-badge.jpg"
                                             alt="Pre-Release Listing"
                                             fill
-                                            className="object-contain mix-blend-screen"
+                                            className="object-contain"
                                         />
                                     </div>
                                 )}
