@@ -198,7 +198,9 @@ model Event {
   rainDate       DateTime?
 
   entryFee     Float?
+  entryFeeMax  Float?
   spectatorFee Float?
+  spectatorFeeMax Float?
   vehicleRequirements String?
   judgedOrCruiseIn    String @default("BOTH") // EventType
   charityBeneficiary  String?
@@ -348,3 +350,14 @@ model EventPhoto {
 
 
 // (Removed AI Lead Finder Models)
+
+model SystemSettings {
+  id                        String   @id @default("default")
+  featuredEventPrice        Float    @default(19.99)
+  standardEventPrice        Float    @default(0.00) // Default to 0 or 29.99? Using 0.00 implies free/basic? or add explicit default
+  featuredEventDurationDays Int      @default(30)
+  enableRegistration        Boolean  @default(true)
+  maintenanceMode           Boolean  @default(false)
+  supportEmail              String?
+  updatedAt                 DateTime @updatedAt
+}

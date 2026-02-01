@@ -14,7 +14,9 @@ export const eventSchema = z.object({
     rainDatePolicy: z.enum(["NONE", "RAIN_OR_SHINE", "RAIN_DATE_SET", "TBD"]),
     rainDate: z.string().nullable().optional(),
     entryFee: z.number().min(0).default(0),
+    entryFeeMax: z.number().min(0).optional().nullable(),
     spectatorFee: z.number().min(0).default(0),
+    spectatorFeeMax: z.number().min(0).optional().nullable(),
     vehicleRequirements: z.string().nullable().optional().or(z.literal("")),
     // Event Type (String for SQLite)
     judgedOrCruiseIn: z.enum(["JUDGED", "CRUISE_IN", "BOTH"]),

@@ -277,11 +277,23 @@ export default async function EventPage({ params }: PageProps) {
                                         <div className="text-sm text-muted-foreground space-y-1">
                                             <div className="flex justify-between gap-8">
                                                 <span>Show Car:</span>
-                                                <span className="text-white">{(event.entryFee || 0) > 0 ? `$${event.entryFee}` : 'Free'}</span>
+                                                <span className="text-white">
+                                                    {(event.entryFee || 0) > 0
+                                                        ? (event.entryFeeMax && event.entryFeeMax > (event.entryFee || 0)
+                                                            ? `$${event.entryFee} - $${event.entryFeeMax}`
+                                                            : `$${event.entryFee}`)
+                                                        : 'Free'}
+                                                </span>
                                             </div>
                                             <div className="flex justify-between gap-8">
                                                 <span>Spectator:</span>
-                                                <span className="text-white">{(event.spectatorFee || 0) > 0 ? `$${event.spectatorFee}` : 'Free'}</span>
+                                                <span className="text-white">
+                                                    {(event.spectatorFee || 0) > 0
+                                                        ? (event.spectatorFeeMax && event.spectatorFeeMax > (event.spectatorFee || 0)
+                                                            ? `$${event.spectatorFee} - $${event.spectatorFeeMax}`
+                                                            : `$${event.spectatorFee}`)
+                                                        : 'Free'}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

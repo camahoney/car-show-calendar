@@ -24,7 +24,7 @@ export async function createEvent(data: any) {
     const {
         title, description, startDateTime, endDateTime, venueName,
         addressLine1, city, state, zip, rainDatePolicy, rainDate,
-        entryFee, spectatorFee, vehicleRequirements, judgedOrCruiseIn,
+        entryFee, entryFeeMax, spectatorFee, spectatorFeeMax, vehicleRequirements, judgedOrCruiseIn,
         charityBeneficiary, contactEmail, contactPhone,
         websiteUrl, facebookUrl, registrationUrl, posterUrl, votingEnabled, isPreRelease
     } = result.data;
@@ -72,7 +72,9 @@ export async function createEvent(data: any) {
                 rainDatePolicy,
                 rainDate: rainDate ? new Date(rainDate) : null,
                 entryFee,
+                entryFeeMax,
                 spectatorFee,
+                spectatorFeeMax,
                 vehicleRequirements,
                 judgedOrCruiseIn,
                 charityBeneficiary,
@@ -119,7 +121,7 @@ export async function updateEvent(data: any) {
     const {
         title, description, startDateTime, endDateTime, venueName,
         addressLine1, city, state, zip, rainDatePolicy, rainDate,
-        entryFee, spectatorFee, vehicleRequirements, judgedOrCruiseIn,
+        entryFee, entryFeeMax, spectatorFee, spectatorFeeMax, vehicleRequirements, judgedOrCruiseIn,
         charityBeneficiary, contactEmail, contactPhone,
         websiteUrl, facebookUrl, registrationUrl, posterUrl, votingEnabled, isPreRelease
     } = result.data;
@@ -170,7 +172,9 @@ export async function updateEvent(data: any) {
                 rainDatePolicy,
                 rainDate: rainDate ? new Date(rainDate) : null,
                 entryFee,
+                entryFeeMax,
                 spectatorFee,
+                spectatorFeeMax,
                 vehicleRequirements,
                 judgedOrCruiseIn,
                 charityBeneficiary,

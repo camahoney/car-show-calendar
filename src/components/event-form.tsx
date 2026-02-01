@@ -38,7 +38,9 @@ export function EventForm({ initialData }: EventFormProps) {
             zip: "",
             rainDatePolicy: "NONE",
             entryFee: 0,
+            entryFeeMax: undefined,
             spectatorFee: 0,
+            spectatorFeeMax: undefined,
             judgedOrCruiseIn: "BOTH",
             contactEmail: "",
             posterUrl: "",
@@ -261,6 +263,46 @@ export function EventForm({ initialData }: EventFormProps) {
                         />
                         <FormField
                             control={form.control}
+                            name="entryFeeMax"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Max Entry Fee ($) <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            placeholder="Max"
+                                            {...field}
+                                            onChange={e => field.onChange(e.target.value ? e.target.valueAsNumber : null)}
+                                            value={field.value || ""}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="entryFeeMax"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Max Entry Fee ($) <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            placeholder="Max"
+                                            {...field}
+                                            onChange={e => field.onChange(e.target.value ? e.target.valueAsNumber : null)}
+                                            value={field.value || ""}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
                             name="spectatorFee"
                             render={({ field }) => (
                                 <FormItem>
@@ -273,6 +315,26 @@ export function EventForm({ initialData }: EventFormProps) {
                                             {...field}
                                             onChange={e => field.onChange(e.target.valueAsNumber)}
                                             value={field.value || 0}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="spectatorFeeMax"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Max Spectator Fee ($) <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            placeholder="Max"
+                                            {...field}
+                                            onChange={e => field.onChange(e.target.value ? e.target.valueAsNumber : null)}
+                                            value={field.value || ""}
                                         />
                                     </FormControl>
                                     <FormMessage />

@@ -3,11 +3,9 @@
 import { stripe } from "@/lib/stripe";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-
-const FEATURED_PRICE_ID = process.env.STRIPE_PRICE_ID_FEATURED || "price_1Q..."; // Fallback for dev
+import { getSystemSettings } from "./settings";
 
 export async function createFeaturedUpgradeSession(eventId: string) {
     const session = await getServerSession(authOptions);
@@ -25,6 +23,9 @@ export async function createFeaturedUpgradeSession(eventId: string) {
         throw new Error("You do not own this event.");
     }
 
+    const settings = await getSystemSettings();
+    const priceAmount = Math.round(settings.featuredEventPrice * 100);
+
     const checkoutSession = await stripe.checkout.sessions.create({
         mode: "payment",
         payment_method_types: ["card"],
@@ -34,9 +35,9 @@ export async function createFeaturedUpgradeSession(eventId: string) {
                     currency: "usd",
                     product_data: {
                         name: "Featured Event Listing",
-                        description: "Standard + Homepage Feature, Top of Search, Weekly Email (30 Days).",
+                        description: `Standard + Homepage Feature, Top of Search, Weekly Email (${settings.featuredEventDurationDays} Days).`,
                     },
-                    unit_amount: 5900, // $59.00
+                    unit_amount: priceAmount >= 50 ? priceAmount : 1999, // Enforce min 50 cents, fallback to $19.99
                 },
                 quantity: 1,
             },
@@ -71,6 +72,9 @@ export async function createStandardUpgradeSession(eventId: string) {
         throw new Error("You do not own this event.");
     }
 
+    const settings = await getSystemSettings();
+    const priceAmount = Math.round(settings.standardEventPrice * 100);
+
     const checkoutSession = await stripe.checkout.sessions.create({
         mode: "payment",
         payment_method_types: ["card"],
@@ -82,7 +86,7 @@ export async function createStandardUpgradeSession(eventId: string) {
                         name: "Standard Event Listing",
                         description: "Full Page, Poster, Links, Analytics.",
                     },
-                    unit_amount: 2900, // $29.00
+                    unit_amount: priceAmount >= 50 ? priceAmount : 2900, // Enforce min 50 cents, fallback to $29.00
                 },
                 quantity: 1,
             },
