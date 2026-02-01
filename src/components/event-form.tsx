@@ -23,6 +23,8 @@ interface EventFormProps {
 }
 
 export function EventForm({ initialData }: EventFormProps) {
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
     const { data: session } = useSession();
     const isAdmin = session?.user?.role === "ADMIN";
     const [listingType, setListingType] = useState<"BASIC" | "STANDARD">("STANDARD");
