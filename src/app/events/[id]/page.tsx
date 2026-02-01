@@ -43,6 +43,9 @@ export async function generateMetadata({ params }: PageProps) {
     };
 }
 
+import { getMyVendor } from "@/app/actions/vendor";
+import { VendorBoostButton } from "@/components/vendor-boost-button";
+
 export default async function EventPage({ params }: PageProps) {
     const { id } = await params;
     const session = await getServerSession(authOptions);
@@ -65,6 +68,8 @@ export default async function EventPage({ params }: PageProps) {
     // User context data
     let userVehicles: any[] = [];
     let isAttending = false;
+    let currentVendor = null;
+    let isVendorBoosted = false;
 
     if (session?.user) {
         // Check if attending
@@ -75,6 +80,23 @@ export default async function EventPage({ params }: PageProps) {
             where: { userId: session.user.id },
             orderBy: { createdAt: 'desc' }
         });
+
+        // Check Vendor Status
+        currentVendor = await prisma.vendor.findUnique({
+            where: { userId: session.user.id }
+        });
+
+        if (currentVendor) {
+            const boost = await prisma.vendorAppearance.findUnique({
+                where: {
+                    eventId_vendorId: {
+                        eventId: id,
+                        vendorId: currentVendor.id
+                    }
+                }
+            });
+            isVendorBoosted = !!boost?.isBoosted;
+        }
     }
 
     const fullAddress = `${event.addressLine1}, ${event.city}, ${event.state} ${event.zip}`;
@@ -99,7 +121,7 @@ export default async function EventPage({ params }: PageProps) {
 
             <div className="container relative z-10 mx-auto px-4 py-8 pt-32 space-y-8">
 
-                {/* Header Section */}
+                {/* Header Section ... (unchanged) */}
                 <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="space-y-4 max-w-3xl">
                         <div className="flex flex-wrap gap-3">
@@ -157,7 +179,7 @@ export default async function EventPage({ params }: PageProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content (Left) */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Poster - Only for Standard/Featured */}
+                        {/* Poster and Content components (unchanged) ... */}
                         {event.tier !== 'FREE' ? (
                             <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10 bg-card/50 backdrop-blur-sm group">
                                 <Image
@@ -264,6 +286,15 @@ export default async function EventPage({ params }: PageProps) {
                         {/* Organizer Actions */}
                         {session?.user?.id === event.organizer.userId && event.tier !== 'FEATURED' && (
                             <UpgradeEventButton eventId={event.id} />
+                        )}
+
+                        {/* Vendor Actions - Boost Prompt */}
+                        {currentVendor && (
+                            <VendorBoostButton
+                                eventId={event.id}
+                                vendorId={currentVendor.id}
+                                isBoosted={isVendorBoosted}
+                            />
                         )}
 
                         {/* Status Card */}

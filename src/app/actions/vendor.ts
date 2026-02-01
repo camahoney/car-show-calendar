@@ -51,6 +51,7 @@ export async function registerVendor(data: {
     state: string;
     logoUrl?: string;
     website?: string;
+    subscriptionTier?: "FREE" | "PRO"; // New parameter
 }) {
     const user = await getCurrentUser();
     if (!user) return { success: false, error: "Unauthorized" };
@@ -68,16 +69,53 @@ export async function registerVendor(data: {
             data: {
                 userId: user.id,
                 businessName: data.businessName,
-                slug: `${slug}-${Date.now()}`, // Ensure uniqueness
+                slug: `${slug}-${Date.now()}`,
                 category: data.category,
                 description: data.description,
                 city: data.city,
                 state: data.state,
                 logoUrl: data.logoUrl,
                 website: data.website,
-                verifiedStatus: "PENDING"
+                verifiedStatus: "PENDING",
+                subscriptionTier: data.subscriptionTier || "FREE"
             }
         });
+
+        // Handle PRO Payment
+        if (data.subscriptionTier === "PRO") {
+            // Import stripe lazily to avoid circular issues if any? No, import at top.
+            // But we need to define stripe price id.
+            const priceId = process.env.STRIPE_VENDOR_PRO_PRICE_ID;
+
+            if (priceId) {
+                const { stripe } = await import("@/lib/stripe");
+                const session = await stripe.checkout.sessions.create({
+                    mode: "subscription",
+                    payment_method_types: ["card"],
+                    line_items: [
+                        {
+                            price: priceId,
+                            quantity: 1,
+                        },
+                    ],
+                    metadata: {
+                        type: "VENDOR_SUBSCRIPTION",
+                        vendorId: vendor.id,
+                        userId: user.id,
+                        tier: "PRO"
+                    },
+                    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/vendors/${vendor.slug}?success=true`,
+                    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/vendors/register?canceled=true`,
+                    customer_email: user.email || undefined
+                });
+
+                if (session.url) {
+                    return { success: true, redirectUrl: session.url, data: vendor };
+                }
+            } else {
+                console.warn("Missing STRIPE_VENDOR_PRO_PRICE_ID, creating as PRO but no payment charged.");
+            }
+        }
 
         revalidatePath("/vendors");
         return { success: true, data: vendor };
@@ -198,5 +236,51 @@ export async function deleteVendor(vendorId: string) {
     } catch (error) {
         console.error("Delete failed:", error);
         return { success: false, error: "Failed to delete vendor" };
+    }
+}
+
+
+export async function boostEventByVendor(eventId: string, vendorId: string) {
+    const user = await getCurrentUser();
+    if (!user) return { success: false, error: "Unauthorized" };
+
+    try {
+        // Import stripe
+        const { stripe } = await import("@/lib/stripe");
+        const priceId = process.env.STRIPE_VENDOR_BOOST_PRICE_ID;
+
+        if (!priceId) {
+            return { success: false, error: "Configuration Error: Vendor Boost Price ID missing." };
+        }
+
+        const session = await stripe.checkout.sessions.create({
+            mode: "payment", // One-time payment
+            payment_method_types: ["card"],
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: 1,
+                },
+            ],
+            metadata: {
+                type: "VENDOR_BOOST",
+                vendorId: vendorId,
+                eventId: eventId,
+                userId: user.id,
+            },
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/events/${eventId}?boost_success=true`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/events/${eventId}?boost_canceled=true`,
+            customer_email: user.email || undefined
+        });
+
+        if (session.url) {
+            return { success: true, redirectUrl: session.url };
+        } else {
+            return { success: false, error: "Failed to create checkout session" };
+        }
+
+    } catch (error) {
+        console.error("Boost initialization failed:", error);
+        return { success: false, error: "Failed to start boost process" };
     }
 }
