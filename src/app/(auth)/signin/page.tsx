@@ -132,27 +132,6 @@ function SignInForm() {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                     </Button>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            className="w-full bg-white/5 border-white/10 hover:bg-[#1877F2]/20 hover:text-[#1877F2] hover:border-[#1877F2]/50 text-white"
-                            onClick={() => signIn("facebook", { callbackUrl })}
-                            disabled={!!loading}
-                        >
-                            {loading === "facebook" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Facebook className="mr-2 h-4 w-4" />}
-                            Facebook
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="w-full bg-white/5 border-white/10 hover:bg-[#1DA1F2]/20 hover:text-[#1DA1F2] hover:border-[#1DA1F2]/50 text-white"
-                            onClick={() => signIn("twitter", { callbackUrl })}
-                            disabled={!!loading}
-                        >
-                            {loading === "twitter" ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Twitter className="mr-2 h-4 w-4" />}
-                            Twitter
-                        </Button>
-                    </div>
-
                     <div className="flex items-center gap-4 text-xs uppercase text-muted-foreground font-medium">
                         <div className="flex-1 h-px bg-white/10" />
                         Or with email
