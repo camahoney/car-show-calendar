@@ -36,13 +36,14 @@ export async function searchEvents(query: string) {
         });
 
         if (!searchResult.success) {
-            return { success: false, error: searchResult.error || "Search failed" };
+            console.error("Firecrawl API Error:", searchResult.error);
+            return { success: false, error: JSON.stringify(searchResult.error) || "Search failed (API Error)" };
         }
 
         return { success: true, data: searchResult.data };
-    } catch (error) {
-        console.error("Firecrawl Search Error:", error);
-        return { success: false, error: "Internal Scraper Error" };
+    } catch (error: any) {
+        console.error("Firecrawl Exception:", error);
+        return { success: false, error: error.message || "Internal Scraper Exception" };
     }
 }
 
