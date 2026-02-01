@@ -6,6 +6,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,6 +87,8 @@ export default function RootLayout({
           </main>
           <SiteFooter />
           <Toaster position="top-center" richColors theme="dark" />
+          <Analytics />
+          <SpeedInsights />
         </Providers>
       </body>
     </html>
