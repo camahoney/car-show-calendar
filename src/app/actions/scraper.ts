@@ -69,15 +69,17 @@ export async function extractEventDetails(url: string) {
             type: "object",
             properties: {
                 title: { type: "string" },
-                date: { type: "string", description: "Event date in YYYY-MM-DD format if possible, or text" },
-                time: { type: "string" },
-                location: { type: "string", description: "Full address including city, state, zip" },
                 description: { type: "string" },
-                imageUrl: { type: "string" },
-                entryFee: { type: "string" },
-                organizer: { type: "string" }
+                start_date: { type: "string", description: "ISO 8601 format (YYYY-MM-DDTHH:mm:ss)" },
+                end_date: { type: "string", description: "ISO 8601 format" },
+                venue: { type: "string" },
+                address: { type: "string" },
+                city: { type: "string" },
+                state: { type: "string" },
+                zip: { type: "string" },
+                website: { type: "string" }
             },
-            required: ["title", "date", "location"]
+            required: ["title", "start_date", "venue", "city", "state"]
         };
 
         // Use v1/v2 extract method

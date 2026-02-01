@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const eventSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters").max(100),
-    description: z.string().min(10, "Description must be at least 10 characters"),
+    description: z.string().optional().or(z.literal("")),
     startDateTime: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid start date"),
     endDateTime: z.string().refine((val) => !isNaN(Date.parse(val)), "Invalid end date"),
     venueName: z.string().min(2, "Venue name is required"),
@@ -27,7 +27,7 @@ export const eventSchema = z.object({
     websiteUrl: z.string().nullable().optional().or(z.literal("")),
     facebookUrl: z.string().nullable().optional().or(z.literal("")),
     registrationUrl: z.string().nullable().optional().or(z.literal("")),
-    posterUrl: z.string().min(1, "Poster image is required"),
+    posterUrl: z.string().optional().or(z.literal("")),
     votingEnabled: z.boolean().default(true),
     isPreRelease: z.boolean().default(false),
     source: z.string().default("USER"),

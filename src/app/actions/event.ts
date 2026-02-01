@@ -59,7 +59,7 @@ export async function createEvent(data: any) {
             data: {
                 organizerId: organizer.id,
                 title,
-                description,
+                description: description || "No description provided.",
                 startDateTime: new Date(startDateTime),
                 endDateTime: new Date(endDateTime),
                 venueName,
@@ -83,7 +83,7 @@ export async function createEvent(data: any) {
                 websiteUrl,
                 facebookUrl,
                 registrationUrl,
-                posterUrl,
+                posterUrl: posterUrl || "", // Allow empty string for Basic listing
                 votingEnabled,
                 isPreRelease,
                 status: "SUBMITTED", // Default to submitted state
@@ -159,7 +159,7 @@ export async function updateEvent(data: any) {
             where: { id },
             data: {
                 title,
-                description,
+                description: description || "No description provided.",
                 startDateTime: new Date(startDateTime),
                 endDateTime: new Date(endDateTime),
                 venueName,
@@ -183,7 +183,7 @@ export async function updateEvent(data: any) {
                 websiteUrl,
                 facebookUrl,
                 registrationUrl,
-                posterUrl,
+                posterUrl: posterUrl || "",
                 votingEnabled,
                 isPreRelease,
             }

@@ -71,13 +71,23 @@ function ScraperView() {
             const res = await extractEventDetails(url);
             if (res.success && res.data) {
                 // Pre-fill form data
+                // Pre-fill form data
+                const d = res.data;
+
+                // Helper to format ISO date to datetime-local (YYYY-MM-DDTHH:mm)
+                const toLocal = (iso: string) => iso ? iso.slice(0, 16) : "";
+
                 setExtractedData({
-                    title: res.data.title || "",
-                    description: res.data.description || "",
-                    venueName: res.data.location || "", // Initial guess
-                    addressLine1: res.data.location || "",
-                    // Parse date if possible, otherwise leave empty for user
-                    websiteUrl: url,
+                    title: d.title || "",
+                    description: d.description || "",
+                    venueName: d.venue || d.location || "",
+                    addressLine1: d.address || "",
+                    city: d.city || "",
+                    state: d.state || "",
+                    zip: d.zip || "",
+                    startDateTime: toLocal(d.start_date),
+                    endDateTime: toLocal(d.end_date),
+                    websiteUrl: d.website || url,
                     isPreRelease: false,
                     source: "SCRAPER", // Flag for badge
                 });
