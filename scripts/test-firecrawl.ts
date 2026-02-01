@@ -32,6 +32,25 @@ async function test() {
             // @ts-ignore
             if (result.error) console.error("Error Detail:", result.error);
         }
+
+        // Test Extraction
+        console.log("\nTesting Extraction on firecrawl.dev...");
+        // Use a safe URL
+        // @ts-ignore
+        const extractResult = await app.scrape("https://firecrawl.dev", {
+            formats: ["extract"],
+            extract: {
+                schema: {
+                    type: "object",
+                    properties: { title: { type: "string" } }
+                }
+            }
+        });
+
+        console.log("Extract Result Keys:", Object.keys(extractResult));
+        console.log("Extract Result Success?", extractResult.success);
+        console.log("Extract Result Data:", extractResult.extract || extractResult.data);
+
     } catch (e) {
         console.error("Exception:", e);
     }

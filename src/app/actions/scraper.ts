@@ -80,21 +80,27 @@ export async function extractEventDetails(url: string) {
             required: ["title", "date", "location"]
         };
 
-        const extractResult = await app.scrapeUrl(url, {
+        // @ts-ignore
+        const extractResult = await app.scrape(url, {
             formats: ["extract"],
             extract: {
                 schema: schema
             }
         });
 
-        if (!extractResult.success) {
-            return { success: false, error: extractResult.error };
+        // Handle response
+        // @ts-ignore
+        const data = extractResult.extract || extractResult.data || extractResult;
+
+        if (!data && !extractResult.success) {
+            return { success: false, error: extractResult.error || "Extraction failed" };
         }
 
-        return { success: true, data: extractResult.extract };
+        // If data is just the object, return it.
+        return { success: true, data: data };
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Firecrawl Extract Error:", error);
-        return { success: false, error: "Internal Extraction Error" };
+        return { success: false, error: error.message || "Internal Extraction Error" };
     }
 }
