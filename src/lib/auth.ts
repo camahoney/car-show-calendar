@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
                     pass: process.env.RESEND_API_KEY,
                 },
             },
-            from: "onboarding@resend.dev", // Default Resend testing email
+            from: "noreply@autoshowlist.com", // Default Resend testing email
         }),
         // Development only provider to allow login without keys
         CredentialsProvider({
