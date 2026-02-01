@@ -35,12 +35,20 @@ export async function searchEvents(query: string) {
             limit: 10
         });
 
-        if (!searchResult.success) {
-            console.error("Firecrawl API Error:", searchResult.error);
-            return { success: false, error: JSON.stringify(searchResult.error) || "Search failed (API Error)" };
+        // Firecrawl SDK v1+ returns { success: true, data: ... } OR just the data depending on method.
+        // Based on logs, it returns { web: [...] } for search.
+        // We handle both cases.
+        // @ts-ignore
+        const results = searchResult.data || searchResult.web || searchResult.results;
+
+        if (!results && !searchResult.success) {
+            // @ts-ignore
+            console.error("Firecrawl API Error:", searchResult.error || searchResult);
+            // @ts-ignore
+            return { success: false, error: JSON.stringify(searchResult.error) || "Search failed (No results)" };
         }
 
-        return { success: true, data: searchResult.data };
+        return { success: true, data: results || searchResult };
     } catch (error: any) {
         console.error("Firecrawl Exception:", error);
         return { success: false, error: error.message || "Internal Scraper Exception" };
