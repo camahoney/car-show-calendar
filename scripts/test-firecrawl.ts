@@ -37,9 +37,10 @@ async function test() {
         console.log("\nTesting Extraction (v2 method) on firecrawl.dev...");
 
         // formats: ['extract'] is deprecated/removed in v2 scrape.
-        // Use app.extract([url], { schema }) instead.
+        // Use app.extract({ urls: [...], schema: ... })
         // @ts-ignore
-        const extractResult = await app.extract(["https://firecrawl.dev"], {
+        const extractResult = await app.extract({
+            urls: ["https://firecrawl.dev"],
             schema: {
                 type: "object",
                 properties: { title: { type: "string" } }

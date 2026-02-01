@@ -82,7 +82,8 @@ export async function extractEventDetails(url: string) {
 
         // Use v1/v2 extract method
         // @ts-ignore
-        const extractResult = await app.extract([url], {
+        const extractResult = await app.extract({
+            urls: [url],
             schema: schema,
             prompt: "Extract event details from this page."
         });
