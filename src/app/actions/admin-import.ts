@@ -42,30 +42,44 @@ export async function importEvents(jsonString: string) {
         // Parse function helper
         // Normalize keys
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // Fuzzy Key Matcher
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const normalize = (obj: any) => {
-            const get = (keys: string[]) => {
-                for (const k of keys) {
-                    if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "") return obj[k];
+            // Create a map of normalized keys to values
+            const normalizedObj: Record<string, any> = {};
+            Object.keys(obj).forEach(k => {
+                // "Event Name" -> "eventname"
+                const cleanKey = k.toLowerCase().replace(/[^a-z0-9]/g, "");
+                normalizedObj[cleanKey] = obj[k];
+            });
+
+            const get = (targetKeys: string[]) => {
+                for (const k of targetKeys) {
+                    const cleanTarget = k.toLowerCase().replace(/[^a-z0-9]/g, "");
+                    if (normalizedObj[cleanTarget] !== undefined && normalizedObj[cleanTarget] !== null && normalizedObj[cleanTarget] !== "") {
+                        return normalizedObj[cleanTarget];
+                    }
                 }
                 return undefined;
             };
+
             return {
-                title: get(["event_name", "title", "name", "Event Name", "Name"]),
-                venue: get(["venue_name", "venue", "location", "Venue", "Location"]),
-                street: get(["address_street", "address", "street", "Address", "Street"]),
-                city: get(["address_city", "city", "City"]),
-                state: get(["address_state", "state", "State", "Province"]),
-                zip: get(["address_zip", "zip", "Zip", "Postal Code"]),
-                startDate: get(["start_date", "startDate", "starts", "Date", "Event Date"]),
-                startTime: get(["start_time", "startTime", "Time", "Start Time"]),
-                endDate: get(["end_date", "endDate", "ends", "End Date"]),
-                endTime: get(["end_time", "endTime", "End Time"]),
-                entryFee: get(["entry_fee", "entryFee", "cost", "fee", "Price"]),
-                spectatorFee: get(["spectator_fee", "spectatorFee"]),
-                url: get(["source_url", "url", "website", "link", "Website", "URL"]),
-                email: get(["contact_email", "email", "contact", "Contact Email"]),
-                phone: get(["contact_phone", "phone", "Contact Phone"]),
-                desc: get(["description", "desc", "details", "Description"])
+                title: get(["title", "name", "eventname", "eventtitle"]),
+                venue: get(["venue", "venuename", "location", "place"]),
+                street: get(["address", "street", "addressstreet", "addr", "streetaddress"]),
+                city: get(["city", "addresscity", "town"]),
+                state: get(["state", "addressstate", "province", "region"]),
+                zip: get(["zip", "zipcode", "postalcode", "addresszip"]),
+                startDate: get(["startdate", "date", "eventdate", "day", "starts"]),
+                startTime: get(["starttime", "time", "startsall"]),
+                endDate: get(["enddate", "ends", "end"]),
+                endTime: get(["endtime"]),
+                entryFee: get(["entryfee", "fee", "cost", "price", "admission"]),
+                spectatorFee: get(["spectatorfee", "spectatorcost"]),
+                url: get(["url", "website", "link", "source", "sourceurl"]),
+                email: get(["email", "contact", "contactemail"]),
+                phone: get(["phone", "contactphone", "tel"]),
+                desc: get(["description", "desc", "details", "notes", "about"])
             };
         };
 
