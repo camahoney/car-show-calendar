@@ -77,7 +77,7 @@ export async function registerVendor(data: {
                 logoUrl: data.logoUrl,
                 website: data.website,
                 verifiedStatus: "PENDING",
-                subscriptionTier: data.subscriptionTier || "FREE"
+                subscriptionTier: "FREE" // Force FREE initially. Upgrade happens via Webhook.
             }
         });
 
