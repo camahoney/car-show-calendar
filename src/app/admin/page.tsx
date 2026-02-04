@@ -52,8 +52,8 @@ export default async function AdminDashboardPage() {
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat) => (
-                    {
-                        stat.href ? (
+                    <div key={stat.title}>
+                        {stat.href ? (
                             <a href={stat.href} className="group relative block overflow-hidden rounded-2xl border border-white/5 bg-white/5 p-6 backdrop-blur-sm transition-all hover:bg-white/10 hover:border-white/10 hover:shadow-2xl hover:shadow-primary/5">
                                 <div className={`absolute right-4 top-4 rounded-xl p-2.5 ${stat.bg} ${stat.color} opacity-80 transition-opacity group-hover:opacity-100`}>
                                     <stat.icon className="h-5 w-5" />
@@ -62,7 +62,6 @@ export default async function AdminDashboardPage() {
                                     <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                                     <p className="text-3xl font-bold text-white tracking-tight">{stat.value}</p>
                                 </div>
-                                {/* Glow effect */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none" />
                             </a>
                         ) : (
@@ -74,11 +73,10 @@ export default async function AdminDashboardPage() {
                                     <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
                                     <p className="text-3xl font-bold text-white tracking-tight">{stat.value}</p>
                                 </div>
-                                {/* Glow effect */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100 pointer-events-none" />
                             </div>
-                        )
-                    }
+                        )}
+                    </div>
                 ))}
             </div>
 
