@@ -3,75 +3,54 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
-async function verifyAdmin() {
+// Ensure only admins can call this (middleware protects /admin routes, but server actions need checks too)
+async function ensureAdmin() {
     const user = await getCurrentUser();
-    // Force cast to ensure we can check role property even if type inference fails
-    const userWithRole = user as { id: string; role: string; email?: string | null };
-
-    if (!userWithRole || userWithRole.role !== "ADMIN") {
+    if (!user || user.role !== "ADMIN") {
         throw new Error("Unauthorized");
     }
-    return userWithRole;
+    return user;
 }
 
-export async function approveEvent(formData: FormData) {
-    await verifyAdmin();
-    const eventId = formData.get("eventId") as string;
+export async function approveEvent(eventId: string) {
+    try {
+        await ensureAdmin();
 
-    await prisma.event.update({
-        where: { id: eventId },
-        data: { status: "APPROVED" }
-    });
+        await prisma.event.update({
+            where: { id: eventId },
+            data: { status: "PUBLISHED" }
+        });
 
-    revalidatePath("/admin/events");
+        revalidatePath("/admin");
+        revalidatePath("/events");
+        revalidatePath(`/events/${eventId}`); // In case slug changes or cache logic
+        return { success: true };
+    } catch (error) {
+        console.error("Approve Event Error", error);
+        return { success: false, error: "Failed to approve event" };
+    }
 }
 
-export async function rejectEvent(formData: FormData) {
-    await verifyAdmin();
-    const eventId = formData.get("eventId") as string;
+export async function rejectEvent(eventId: string) {
+    try {
+        await ensureAdmin();
 
-    await prisma.event.update({
-        where: { id: eventId },
-        data: { status: "REJECTED" }
-    });
+        // Should we delete or set to REJECTED?
+        // Let's set to REJECTED for record keeping, or DRAFT if we want them to fix it.
+        // For now, DRAFT so they can edit? Or REJECTED if it's spam.
+        // Let's act like "Reject" means "Delete" for spam, or "Unpublish".
+        // Actually, let's use "REJECTED" status if valid, otherwise DELETE.
+        // Schema status is string.
+        await prisma.event.update({
+            where: { id: eventId },
+            data: { status: "REJECTED" }
+        });
 
-    revalidatePath("/admin/events");
-}
-
-export async function verifyOrganizer(formData: FormData) {
-    await verifyAdmin();
-    const organizerId = formData.get("organizerId") as string;
-
-    await prisma.organizerProfile.update({
-        where: { id: organizerId },
-        data: { verifiedStatus: "VERIFIED" }
-    });
-
-    revalidatePath("/admin/verifications");
-}
-
-export async function verifyVendor(formData: FormData) {
-    await verifyAdmin();
-    const vendorId = formData.get("vendorId") as string;
-
-    await prisma.vendor.update({
-        where: { id: vendorId },
-        data: { verifiedStatus: "VERIFIED" }
-    });
-
-    revalidatePath("/admin/verifications");
-}
-
-export async function resolveReport(formData: FormData) {
-    await verifyAdmin();
-    const reportId = formData.get("reportId") as string;
-
-    await prisma.report.update({
-        where: { id: reportId },
-        data: { status: "RESOLVED" }
-    });
-
-    revalidatePath("/admin/reports");
+        revalidatePath("/admin");
+        return { success: true };
+    } catch (error) {
+        console.error("Reject Event Error", error);
+        return { success: false, error: "Failed to reject event" };
+    }
 }
