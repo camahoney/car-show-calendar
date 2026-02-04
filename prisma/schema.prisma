@@ -84,6 +84,7 @@ model User {
   vehicles         Vehicle[]
   rsvps            EventRSVP[]
   photos           EventPhoto[]
+  drafts           EventDraft[]
 }
 
 model Subscription {
@@ -116,6 +117,7 @@ model OrganizerProfile {
   organizerName  String
   phone          String?
   website        String?
+  address        String?
   verifiedStatus String   @default("UNVERIFIED") // VerifiedStatus
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -218,6 +220,8 @@ model Event {
   status String @default("DRAFT") // EventStatus
   tier   String @default("FREE_BASIC") // EventTier
 
+  slug String @unique @default(cuid()) // unique slug for SEO
+
   featuredUntil DateTime?
   votingEnabled Boolean   @default(true)
   isClaimable   Boolean   @default(false)
@@ -234,6 +238,20 @@ model Event {
   rsvps             EventRSVP[]
   vendorAppearances VendorAppearance[]
   photos            EventPhoto[]
+}
+
+model EventDraft {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  step      Int      @default(1)
+  data      String   // JSON string of partial data
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model Vote {
