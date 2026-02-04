@@ -220,7 +220,7 @@ model Event {
   status String @default("DRAFT") // EventStatus
   tier   String @default("FREE_BASIC") // EventTier
 
-  slug String @unique @default(cuid()) // unique slug for SEO
+  slug String? @unique @default(cuid()) // unique slug for SEO
 
   featuredUntil DateTime?
   votingEnabled Boolean   @default(true)
