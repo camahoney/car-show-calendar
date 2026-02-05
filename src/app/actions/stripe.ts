@@ -28,6 +28,7 @@ export async function createFeaturedUpgradeSession(eventId: string) {
 
     const checkoutSession = await stripe.checkout.sessions.create({
         mode: "payment",
+        allow_promotion_codes: true,
         payment_method_types: ["card"],
         line_items: [
             {
@@ -77,6 +78,7 @@ export async function createStandardUpgradeSession(eventId: string) {
 
     const checkoutSession = await stripe.checkout.sessions.create({
         mode: "payment",
+        allow_promotion_codes: true,
         payment_method_types: ["card"],
         line_items: [
             {
