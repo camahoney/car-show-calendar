@@ -97,7 +97,7 @@ export default function TermsPage() {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">11. Contact Us</h2>
                     <p>
-                        If you have any questions about these Terms, please contact us at <a href="mailto:support@carshowcalendar.com" className="text-primary hover:underline">support@carshowcalendar.com</a>.
+                        If you have any questions about these Terms, please contact us at <a href="mailto:support@autoshowlist.com" className="text-primary hover:underline">support@autoshowlist.com</a>.
                     </p>
                 </section>
             </div>

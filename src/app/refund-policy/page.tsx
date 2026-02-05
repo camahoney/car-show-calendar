@@ -55,7 +55,7 @@ export default function RefundPage() {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">4. How to Request a Refund</h2>
                     <p>
-                        To request a refund or raise a billing dispute, please email us at <a href="mailto:support@carshowcalendar.com" className="text-primary hover:underline">support@carshowcalendar.com</a> with the subject line "Refund Request". Please include:
+                        To request a refund or raise a billing dispute, please email us at <a href="mailto:support@autoshowlist.com" className="text-primary hover:underline">support@autoshowlist.com</a> with the subject line "Refund Request". Please include:
                     </p>
                     <ul className="list-disc pl-5 space-y-2 mt-2">
                         <li>Your account email address</li>
