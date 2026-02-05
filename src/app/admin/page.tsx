@@ -1,14 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Calendar, ShieldAlert, TrendingUp } from "lucide-react";
+import { getAdminDashboardStats, getRecentActivity } from "../actions/admin";
+import { OverviewCharts } from "@/components/admin/OverviewCharts";
+import { RecentActivityList } from "@/components/admin/RecentActivityList";
 
 export default async function AdminDashboardPage() {
     // Parallel data fetching for speed
-    const [userCount, eventCount, reportCount, pendingEvents] = await Promise.all([
+    const [userCount, eventCount, reportCount, pendingEvents, chartData, recentActivity] = await Promise.all([
         prisma.user.count(),
         prisma.event.count(),
         prisma.report.count({ where: { status: "OPEN" } }),
         prisma.event.count({ where: { status: "PENDING_REVIEW" } }),
+        getAdminDashboardStats(),
+        getRecentActivity()
     ]);
 
     const stats = [
@@ -32,7 +36,7 @@ export default async function AdminDashboardPage() {
             icon: ShieldAlert,
             color: "text-orange-500",
             bg: "bg-orange-500/10",
-            href: "/admin/events/pending", // Add link property
+            href: "/admin/events/pending",
         },
         {
             title: "Reports",
@@ -44,7 +48,7 @@ export default async function AdminDashboardPage() {
     ];
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex flex-col gap-2">
                 <h1 className="text-4xl font-heading font-bold text-white tracking-tight">Admin Dashboard</h1>
                 <p className="text-muted-foreground">Welcome back, Commander. System overview online.</p>
@@ -80,20 +84,10 @@ export default async function AdminDashboardPage() {
                 ))}
             </div>
 
-            {/* Recent Activity Section placeholder */}
-            <div className="grid gap-6 md:grid-cols-2">
-                <div className="rounded-2xl border border-white/5 bg-black/40 p-6 backdrop-blur-md h-96">
-                    <h3 className="font-heading font-bold text-lg mb-4 text-white">System Activity</h3>
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                        Chart visualization coming soon...
-                    </div>
-                </div>
-                <div className="rounded-2xl border border-white/5 bg-black/40 p-6 backdrop-blur-md h-96">
-                    <h3 className="font-heading font-bold text-lg mb-4 text-white">Recent Registrations</h3>
-                    <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                        List coming soon...
-                    </div>
-                </div>
+            {/* Charts & Activity */}
+            <div className="grid gap-6">
+                <OverviewCharts data={chartData} />
+                <RecentActivityList users={recentActivity.recentUsers} events={recentActivity.recentEvents} />
             </div>
         </div>
     );
