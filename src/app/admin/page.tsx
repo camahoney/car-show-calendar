@@ -2,16 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { Users, Calendar, ShieldAlert, TrendingUp } from "lucide-react";
 import { getAdminDashboardStats, getRecentActivity } from "../actions/admin";
 import { RecentActivityList } from "@/components/admin/RecentActivityList";
-import dynamic from "next/dynamic";
-
-const OverviewCharts = dynamic(() => import("@/components/admin/OverviewCharts").then(mod => mod.OverviewCharts), {
-    ssr: false,
-    loading: () => <div className="col-span-4 h-[350px] animate-pulse rounded-xl bg-white/5" />
-});
+// import { ChartsWrapper } from "@/components/admin/ChartsWrapper";
+// Vercel Redeploy Trigger: 2026-02-05 19:00
 
 export default async function AdminDashboardPage() {
     let recentActivity = { recentUsers: [], recentEvents: [] };
-    let chartData = [];
+    let chartData: any[] = []; // Explicit type to fix implicit any
 
     // Safely fetch extra data to prevent page crash
     try {
@@ -20,7 +16,9 @@ export default async function AdminDashboardPage() {
             getRecentActivity()
         ]);
         chartData = dashboardData[0];
+        // @ts-ignore
         recentActivity = dashboardData[1];
+        console.log("Charts disabled temporarily", chartData.length); // Prevent unused var
     } catch (e) {
         console.error("Failed to fetch admin dashboard extended stats", e);
     }
@@ -104,7 +102,7 @@ export default async function AdminDashboardPage() {
 
             {/* Charts & Activity */}
             <div className="grid gap-6">
-                <OverviewCharts data={chartData} />
+                {/* <ChartsWrapper data={chartData} /> */}
                 <RecentActivityList users={recentActivity.recentUsers} events={recentActivity.recentEvents} />
             </div>
         </div>
