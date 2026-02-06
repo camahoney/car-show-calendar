@@ -43,7 +43,7 @@ export function RecentActivityList({ users, events }: RecentActivityProps) {
                             </div>
                             <div className="flex-1 space-y-1">
                                 <p className="text-sm font-medium leading-none text-white truncate max-w-[180px]">{event.title}</p>
-                                <p className="text-xs text-muted-foreground">{event.organizer?.organizationName || "Unknown Org"}</p>
+                                <p className="text-xs text-muted-foreground">{event.organizer?.organizerName || "Unknown Org"}</p>
                             </div>
                             <div className="flex flex-col items-end gap-1">
                                 <Badge variant={event.status === 'PUBLISHED' ? "outline" : "secondary"} className="text-[10px] h-5">

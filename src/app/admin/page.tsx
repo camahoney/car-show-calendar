@@ -1,18 +1,36 @@
 import { prisma } from "@/lib/prisma";
 import { Users, Calendar, ShieldAlert, TrendingUp } from "lucide-react";
 import { getAdminDashboardStats, getRecentActivity } from "../actions/admin";
-import { OverviewCharts } from "@/components/admin/OverviewCharts";
 import { RecentActivityList } from "@/components/admin/RecentActivityList";
+import dynamic from "next/dynamic";
+
+const OverviewCharts = dynamic(() => import("@/components/admin/OverviewCharts").then(mod => mod.OverviewCharts), {
+    ssr: false,
+    loading: () => <div className="col-span-4 h-[350px] animate-pulse rounded-xl bg-white/5" />
+});
 
 export default async function AdminDashboardPage() {
-    // Parallel data fetching for speed
-    const [userCount, eventCount, reportCount, pendingEvents, chartData, recentActivity] = await Promise.all([
+    let recentActivity = { recentUsers: [], recentEvents: [] };
+    let chartData = [];
+
+    // Safely fetch extra data to prevent page crash
+    try {
+        const dashboardData = await Promise.all([
+            getAdminDashboardStats(),
+            getRecentActivity()
+        ]);
+        chartData = dashboardData[0];
+        recentActivity = dashboardData[1];
+    } catch (e) {
+        console.error("Failed to fetch admin dashboard extended stats", e);
+    }
+
+    // Basic stats (Keep these required as they were working before)
+    const [userCount, eventCount, reportCount, pendingEvents] = await Promise.all([
         prisma.user.count(),
         prisma.event.count(),
         prisma.report.count({ where: { status: "OPEN" } }),
         prisma.event.count({ where: { status: "PENDING_REVIEW" } }),
-        getAdminDashboardStats(),
-        getRecentActivity()
     ]);
 
     const stats = [

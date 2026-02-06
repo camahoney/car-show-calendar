@@ -113,7 +113,7 @@ export async function getRecentActivity() {
         prisma.event.findMany({
             orderBy: { createdAt: 'desc' },
             take: 5,
-            select: { id: true, title: true, status: true, createdAt: true, organizer: { select: { organizationName: true } } }
+            select: { id: true, title: true, status: true, createdAt: true, organizer: { select: { organizerName: true } } }
         })
     ]);
 
