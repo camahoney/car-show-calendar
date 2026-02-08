@@ -69,19 +69,36 @@ export default async function EventsPage({ searchParams }: PageProps) {
         ];
     }
 
+    // State Filter
+    if (params.state) {
+        whereClause.state = {
+            equals: params.state as string,
+            mode: 'insensitive'
+        };
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let events: any[] = [];
+    let states: string[] = [];
+
     try {
-        events = await prisma.event.findMany({
-            where: whereClause,
-            orderBy: [
-                { tier: "desc" }, // Featured first
-                { startDateTime: "asc" },
-            ],
-            include: {
-                organizer: true
-            }
-        });
+        const [eventsData, statesData] = await Promise.all([
+            prisma.event.findMany({
+                where: whereClause,
+                orderBy: [{ startDateTime: "asc" }],
+                include: { organizer: true }
+            }),
+            prisma.event.findMany({
+                where: { status: { in: ["APPROVED", "PUBLISHED"] }, endDateTime: { gte: new Date() } },
+                select: { state: true },
+                distinct: ['state'],
+                orderBy: { state: 'asc' }
+            })
+        ]);
+
+        events = eventsData;
+        states = statesData.map(s => s.state).filter(Boolean) as string[];
+
     } catch (error) {
         console.error("[Events Page] Failed to fetch events:", error);
     }
@@ -99,7 +116,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
                     </div>
 
                     {/* Filters Component */}
-                    <EventFilters />
+                    <EventFilters states={states} />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

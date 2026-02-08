@@ -10,7 +10,7 @@ export default async function Home() {
   // Fetch optimized events
   const dbCall = prisma.event.findMany({
     where: { status: { in: ["APPROVED", "SUBMITTED"] } },
-    orderBy: [{ tier: 'desc' }, { startDateTime: 'asc' }],
+    orderBy: [{ startDateTime: 'asc' }],
     take: 50,
     include: { organizer: true }
   });
