@@ -13,45 +13,43 @@ async function ensureAdmin() {
     return user;
 }
 
-export async function approveEvent(eventId: string) {
+export async function approveEvent(formData: FormData) {
+    const eventId = formData.get("eventId") as string;
+    if (!eventId) return { success: false, error: "Event ID is required" };
+
     try {
         await ensureAdmin();
 
         await prisma.event.update({
             where: { id: eventId },
-            data: { status: "PUBLISHED" }
+            data: { status: "APPROVED" } // Using APPROVED as per schema, PUBLISHED might be old enum
         });
 
         revalidatePath("/admin");
         revalidatePath("/events");
-        revalidatePath(`/events/${eventId}`); // In case slug changes or cache logic
-        return { success: true };
+        revalidatePath(`/events/${eventId}`);
     } catch (error) {
         console.error("Approve Event Error", error);
-        return { success: false, error: "Failed to approve event" };
+        throw error; // Let Next.js handle the error boundary
     }
 }
 
-export async function rejectEvent(eventId: string) {
+export async function rejectEvent(formData: FormData) {
+    const eventId = formData.get("eventId") as string;
+    if (!eventId) throw new Error("Event ID is required");
+
     try {
         await ensureAdmin();
 
-        // Should we delete or set to REJECTED?
-        // Let's set to REJECTED for record keeping, or DRAFT if we want them to fix it.
-        // For now, DRAFT so they can edit? Or REJECTED if it's spam.
-        // Let's act like "Reject" means "Delete" for spam, or "Unpublish".
-        // Actually, let's use "REJECTED" status if valid, otherwise DELETE.
-        // Schema status is string.
         await prisma.event.update({
             where: { id: eventId },
             data: { status: "REJECTED" }
         });
 
         revalidatePath("/admin");
-        return { success: true };
     } catch (error) {
         console.error("Reject Event Error", error);
-        return { success: false, error: "Failed to reject event" };
+        throw error;
     }
 }
 

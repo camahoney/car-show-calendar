@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = process.env.NEXTAUTH_URL || "https://car-show-calendar.vercel.app";
+    const baseUrl = "https://autoshowlist.com";
 
     // 1. Static Routes
     const staticRoutes = [
@@ -13,7 +13,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         "/privacy",
         "/terms",
         "/refund-policy",
-        "/vendors-info", // If exists
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),

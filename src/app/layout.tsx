@@ -26,7 +26,10 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXTAUTH_URL || "https://car-show-calendar.vercel.app"),
+  metadataBase: new URL("https://autoshowlist.com"),
+  alternates: {
+    canonical: "./",
+  },
   title: {
     default: "Car Show Calendar | Premier Automotive Events",
     template: "%s | Car Show Calendar"

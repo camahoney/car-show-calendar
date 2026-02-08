@@ -10,7 +10,7 @@ import { approveEvent, rejectEvent } from "@/app/actions/admin"; // We need to c
 
 export default async function AdminEventsPage() {
     const pendingEvents = await prisma.event.findMany({
-        where: { status: "SUBMITTED" },
+        where: { status: "PENDING_REVIEW" },
         include: { organizer: true },
         orderBy: { createdAt: "asc" }
     });
