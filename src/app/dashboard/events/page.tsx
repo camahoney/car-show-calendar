@@ -11,7 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge"; // Ensure Badge component exists or remove import
+import { StatusBadge } from "@/components/status-badge";
 
 export default async function MyEventsPage() {
     const user = await getCurrentUser();
@@ -68,9 +68,7 @@ export default async function MyEventsPage() {
                                     <TableCell>{new Date(event.startDateTime).toLocaleDateString()}</TableCell>
                                     <TableCell>{event.city}, {event.state}</TableCell>
                                     <TableCell>
-                                        <Badge variant={event.status === 'PUBLISHED' ? 'default' : 'secondary'}>
-                                            {event.status}
-                                        </Badge>
+                                        <StatusBadge status={event.status} />
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Link href={`/events/${event.id}/edit`}>

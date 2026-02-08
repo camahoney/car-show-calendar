@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { AnalyticsSummary } from "@/components/dashboard/analytics-summary";
+import { StatusBadge } from "@/components/status-badge";
 
 export default async function DashboardPage() {
     const user = await getCurrentUser();
@@ -81,10 +82,7 @@ export default async function DashboardPage() {
                                         </p>
                                     </div>
                                     <div className="ml-auto font-medium">
-                                        {/* Status Badge */}
-                                        <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
-                                            {event.status || 'DRAFT'}
-                                        </span>
+                                        <StatusBadge status={event.status || 'DRAFT'} />
                                     </div>
                                 </div>
                             ))}
