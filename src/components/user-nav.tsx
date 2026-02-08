@@ -13,6 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut } from "next-auth/react";
+import { ShieldCheck } from "lucide-react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function UserNav({ user }: { user: any }) {
@@ -52,6 +53,13 @@ export function UserNav({ user }: { user: any }) {
                             My Events
                         </Link>
                     </DropdownMenuItem>
+                    {user.role === "ADMIN" && (
+                        <DropdownMenuItem asChild>
+                            <Link href="/admin" className="cursor-pointer font-medium">
+                                Admin Panel
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                         <Link href="/dashboard/settings" className="cursor-pointer font-medium">
                             Settings

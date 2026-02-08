@@ -106,7 +106,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User, LayoutDashboard, Settings } from "lucide-react";
+import { LogOut, User, LayoutDashboard, Settings, ShieldCheck } from "lucide-react";
 
 function UserMenu() {
     const { data: session, status } = useSession();
@@ -149,6 +149,14 @@ function UserMenu() {
                         Dashboard
                     </Link>
                 </DropdownMenuItem>
+                {session.user?.role === "ADMIN" && (
+                    <DropdownMenuItem asChild>
+                        <Link href="/admin" className="cursor-pointer">
+                            <ShieldCheck className="mr-2 h-4 w-4" />
+                            Admin Panel
+                        </Link>
+                    </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                     <Link href="/dashboard/settings" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
