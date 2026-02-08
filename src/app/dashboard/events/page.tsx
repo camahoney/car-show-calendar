@@ -17,9 +17,33 @@ export default async function MyEventsPage() {
     const user = await getCurrentUser();
     if (!user) return null;
 
+    const organizerProfile = await prisma.organizerProfile.findUnique({
+        where: { userId: user.id }
+    });
+
+    if (!organizerProfile) {
+        return (
+            <div className="flex-1 space-y-4 p-8 pt-6">
+                <div className="flex items-center justify-between space-y-2">
+                    <h2 className="text-3xl font-bold tracking-tight">My Events</h2>
+                    <div className="flex items-center space-x-2">
+                        <Link href="/events/new">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Add Event
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+                <div className="rounded-md border p-8 text-center">
+                    <p className="text-muted-foreground">Complete your organizer profile to manage events.</p>
+                </div>
+            </div>
+        );
+    }
+
     const events = await prisma.event.findMany({
         where: {
-            organizerId: user.id
+            organizerId: organizerProfile.id
         },
         orderBy: {
             createdAt: 'desc'

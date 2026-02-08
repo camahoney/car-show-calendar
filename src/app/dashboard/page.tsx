@@ -11,15 +11,42 @@ export default async function DashboardPage() {
     const user = await getCurrentUser();
     if (!user) return null;
 
+    const organizerProfile = await prisma.organizerProfile.findUnique({
+        where: { userId: user.id }
+    });
+
+    if (!organizerProfile) {
+        return (
+            <div className="flex-1 space-y-4 p-8 pt-6">
+                <div className="flex items-center justify-between space-y-2">
+                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                    <div className="flex items-center space-x-2">
+                        <Link href="/events/new">
+                            <Button>
+                                <Plus className="mr-2 h-4 w-4" /> Create Event
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+                <div className="rounded-md border p-8 text-center">
+                    <p className="text-muted-foreground">Complete your organizer profile to view analytics.</p>
+                </div>
+            </div>
+        )
+    }
+
+    /* 
+    // Count is not used in UI currently but good to have correct
     const eventCount = await prisma.event.count({
         where: {
-            organizerId: user.id
+            organizerId: organizerProfile.id
         }
     });
+    */
 
     const recentEvents = await prisma.event.findMany({
         where: {
-            organizerId: user.id
+            organizerId: organizerProfile.id
         },
         orderBy: {
             createdAt: 'desc'
@@ -28,7 +55,7 @@ export default async function DashboardPage() {
     });
 
     const events = await prisma.event.findMany({
-        where: { organizerId: user.id },
+        where: { organizerId: organizerProfile.id },
         include: { votes: true, saves: true }
     });
 
