@@ -28,8 +28,10 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps) {
     const { id } = await params;
-    const event = await prisma.event.findUnique({
-        where: { id },
+    const event = await prisma.event.findFirst({
+        where: {
+            OR: [{ id }, { slug: id }]
+        },
     });
 
     if (!event) return { title: "Event Not Found" };
@@ -50,8 +52,10 @@ export default async function EventPage({ params }: PageProps) {
     const { id } = await params;
     const session = await getServerSession(authOptions);
 
-    const event = await prisma.event.findUnique({
-        where: { id },
+    const event = await prisma.event.findFirst({
+        where: {
+            OR: [{ id }, { slug: id }]
+        },
         include: {
             organizer: true,
             rsvps: {
