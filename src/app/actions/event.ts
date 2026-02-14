@@ -247,3 +247,30 @@ export async function claimEvent(eventId: string) {
         return { error: "Failed to claim event." };
     }
 }
+
+export async function deleteEvents(eventIds: string[]) {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user || session.user.role !== "ADMIN") {
+        return { error: "Unauthorized" };
+    }
+
+    try {
+        await prisma.event.deleteMany({
+            where: {
+                id: {
+                    in: eventIds
+                }
+            }
+        });
+
+        revalidatePath("/admin/all-events");
+        revalidatePath("/dashboard");
+        revalidatePath("/");
+
+        return { success: true, count: eventIds.length };
+    } catch (error) {
+        console.error("Failed to delete events:", error);
+        return { error: "Failed to delete events" };
+    }
+}

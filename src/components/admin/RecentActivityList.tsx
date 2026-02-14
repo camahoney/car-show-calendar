@@ -1,9 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { RecentUser, RecentEvent } from "@/types/admin";
 
 interface RecentActivityProps {
-    users: any[];
-    events: any[];
+    users: RecentUser[];
+    events: RecentEvent[];
 }
 
 export function RecentActivityList({ users, events }: RecentActivityProps) {
@@ -15,13 +16,13 @@ export function RecentActivityList({ users, events }: RecentActivityProps) {
                     {users.map((user) => (
                         <div key={user.id} className="flex items-center gap-4">
                             <Avatar className="h-9 w-9 border border-white/10">
-                                <AvatarImage src={user.image} alt={user.name} />
+                                <AvatarImage src={user.image || ""} alt={user.name || "User"} />
                                 <AvatarFallback className="bg-primary/20 text-primary uppercase text-xs">
                                     {user.name?.substring(0, 2) || "U"}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="flex-1 space-y-1">
-                                <p className="text-sm font-medium leading-none text-white">{user.name}</p>
+                                <p className="text-sm font-medium leading-none text-white">{user.name || "Unknown User"}</p>
                                 <p className="text-xs text-muted-foreground">{user.role}</p>
                             </div>
                             <div className="text-xs text-muted-foreground">

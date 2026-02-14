@@ -1,24 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { Users, Calendar, ShieldAlert, TrendingUp } from "lucide-react";
-import { getAdminDashboardStats, getRecentActivity } from "../actions/admin";
+import { getRecentActivity } from "../actions/admin";
 import { RecentActivityList } from "@/components/admin/RecentActivityList";
 // import { ChartsWrapper } from "@/components/admin/ChartsWrapper";
 // Vercel Redeploy Trigger: 2026-02-05 19:00
 
+import { RecentUser, RecentEvent } from "@/types/admin";
+
 export default async function AdminDashboardPage() {
-    let recentActivity = { recentUsers: [], recentEvents: [] };
-    let chartData: any[] = []; // Explicit type to fix implicit any
+    let recentActivity: { recentUsers: RecentUser[]; recentEvents: RecentEvent[] } = { recentUsers: [], recentEvents: [] };
 
     // Safely fetch extra data to prevent page crash
     try {
-        const dashboardData = await Promise.all([
-            getAdminDashboardStats(),
-            getRecentActivity()
-        ]);
-        chartData = dashboardData[0];
-        // @ts-ignore
-        recentActivity = dashboardData[1];
-        console.log("Charts disabled temporarily", chartData.length); // Prevent unused var
+        recentActivity = await getRecentActivity();
     } catch (e) {
         console.error("Failed to fetch admin dashboard extended stats", e);
     }
