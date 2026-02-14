@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { updateProfile } from "@/app/actions/user";
 import { useRouter } from "next/navigation";
-import { ImageUpload } from "@/components/image-upload";
+import { SimpleImageUpload } from "@/components/simple-image-upload";
 
 const profileFormSchema = z.object({
     name: z.string().min(2, {
@@ -100,10 +100,9 @@ export function ProfileForm({ user, profile }: ProfileFormProps) {
                   Using ImageUpload component which handles Cloudinary widget.
                   Pass onChange to update form state.
                 */}
-                                <ImageUpload
+                                <SimpleImageUpload
                                     value={field.value || ""}
                                     onChange={(url) => field.onChange(url)}
-                                    // onRemove is not defined in ImageUploadProps, removing it
                                     disabled={loading}
                                 />
                             </FormControl>
