@@ -7,17 +7,38 @@ interface AddressComponents {
     zip?: string;
 }
 
-async function tryGeocode(query: string, sourceName: string): Promise<{ lat: number, lng: number, source: string } | null> {
+interface GeocodeResult {
+    lat: number;
+    lng: number;
+    zip?: string;
+    source: string;
+}
+
+async function tryGeocode(query: string, sourceName: string): Promise<GeocodeResult | null> {
 
     // 1. Try Mapbox
     if (process.env.NEXT_PUBLIC_MAPBOX_TOKEN) {
         try {
-            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&limit=1`;
+            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&limit=1&types=postcode,place,address,poi`;
             const res = await fetch(url);
             const data = await res.json();
             if (data.features && data.features.length > 0) {
-                const [l, t] = data.features[0].center;
-                return { lat: t, lng: l, source: `Mapbox (${sourceName})` };
+                const feature = data.features[0];
+                const [l, t] = feature.center;
+
+                // Extract Zip from Context
+                let zip = "";
+                // If the result itself is a postcode
+                if (feature.place_type.includes('postcode')) {
+                    zip = feature.text;
+                }
+                // Otherwise check context
+                else if (feature.context) {
+                    const zipContext = feature.context.find((c: any) => c.id.startsWith('postcode'));
+                    if (zipContext) zip = zipContext.text;
+                }
+
+                return { lat: t, lng: l, zip, source: `Mapbox (${sourceName})` };
             }
         } catch (e) {
             console.error("Mapbox Geocoding failed", e);
@@ -26,13 +47,15 @@ async function tryGeocode(query: string, sourceName: string): Promise<{ lat: num
 
     // 2. Try Nominatim
     try {
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`;
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=1`;
         const res = await fetch(url, { headers: { "User-Agent": "CarShowCalendar/1.0" } });
         const data = await res.json();
         if (data && data.length > 0) {
+            const result = data[0];
             return {
-                lat: parseFloat(data[0].lat),
-                lng: parseFloat(data[0].lon),
+                lat: parseFloat(result.lat),
+                lng: parseFloat(result.lon),
+                zip: result.address?.postcode || "",
                 source: `Nominatim (${sourceName})`
             };
         }
@@ -43,10 +66,11 @@ async function tryGeocode(query: string, sourceName: string): Promise<{ lat: num
     return null;
 }
 
-export async function geocodeAddress(input: string | AddressComponents) {
+export async function geocodeAddress(input: string | AddressComponents): Promise<{ lat: number, lng: number, zip?: string, source: string }> {
     let lat = 39.7817; // Default: Springfield, IL
     let lng = -89.6501;
     let source = "Fallback";
+    let foundZip = "";
 
     // Is input just a string or components?
     // If components, we can try multiple strategies
@@ -84,5 +108,5 @@ export async function geocodeAddress(input: string | AddressComponents) {
     }
 
     // 3. Final Fallback
-    return { lat, lng, source };
+    return { lat, lng, zip: foundZip, source };
 }

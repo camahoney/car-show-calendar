@@ -11,8 +11,9 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { SimpleImageUpload } from "@/components/simple-image-upload";
 import { createEvent, updateEvent } from "@/app/actions/event";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { lookupZip } from "@/app/actions/geo";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSession } from "next-auth/react";
 
@@ -61,6 +62,32 @@ export function EventForm({ initialData }: EventFormProps) {
             source: "USER",
         },
     });
+
+    // Auto-Populate ZIP Code
+    const city = form.watch("city");
+    const state = form.watch("state");
+    const addressLn1 = form.watch("addressLine1");
+
+    // Debounce to avoid API spam
+    const debouncedCity = useDebounce(city, 1000);
+    const debouncedState = useDebounce(state, 1000);
+    const debouncedAddress = useDebounce(addressLn1, 1000);
+
+    useEffect(() => {
+        const fetchZip = async () => {
+            // Only fetch if we have City + State, and ZIP is empty
+            if (debouncedCity && debouncedState && debouncedState.length === 2) {
+                const currentZip = form.getValues("zip");
+                if (!currentZip) {
+                    const foundZip = await lookupZip(debouncedCity, debouncedState, debouncedAddress);
+                    if (foundZip) {
+                        form.setValue("zip", foundZip);
+                    }
+                }
+            }
+        };
+        fetchZip();
+    }, [debouncedCity, debouncedState, debouncedAddress, form]);
 
     // Reset advanced fields if switching to BASIC
     const handleTierChange = (type: "BASIC" | "STANDARD") => {
@@ -555,4 +582,18 @@ export function EventForm({ initialData }: EventFormProps) {
             </form>
         </Form>
     );
+}
+
+// Helper hook for debouncing
+function useDebounce<T>(value: T, delay: number): T {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    return debouncedValue;
 }
