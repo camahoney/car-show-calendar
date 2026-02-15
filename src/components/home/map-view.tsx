@@ -38,7 +38,11 @@ export default function MapView({ events }: MapViewProps) {
 
     useEffect(() => {
         setIsMounted(true);
-        console.log("MapView Events:", events.map(e => ({ title: e.title, lat: e.latitude, lng: e.longitude })));
+        const validEvents = events.filter(e => e.latitude && e.longitude);
+        console.log(`MapView: Received ${events.length} events. Valid coordinates: ${validEvents.length}`);
+        if (events.length > 0 && validEvents.length === 0) {
+            console.warn("MapView: Events found but none have valid coordinates (0,0?)");
+        }
     }, [events]);
 
     if (!isMounted) return <div className="h-[500px] w-full bg-muted/20 animate-pulse rounded-xl" />;
@@ -88,8 +92,8 @@ export default function MapView({ events }: MapViewProps) {
                 )}
 
                 {events.map((event) => (
-                    // Only render if lat/lng exist
-                    (event.latitude && event.longitude) ? (
+                    // Only render if lat/lng exist and are not 0 (though fallback should prevent 0)
+                    (event.latitude !== undefined && event.longitude !== undefined && event.latitude !== 0) ? (
                         <Marker
                             key={event.id}
                             position={[event.latitude, event.longitude]}
@@ -103,7 +107,7 @@ export default function MapView({ events }: MapViewProps) {
                                         <div className="p-3">
                                             <h3 className="font-bold text-sm truncate">{event.title}</h3>
                                             <p className="text-xs text-muted-foreground">{event.city}, {event.state}</p>
-                                            <a href={`/events/${event.id}`} className="block mt-2 text-xs text-primary font-bold hover:underline mb-2">
+                                            <a href={`/events/${event.slug || event.id}`} className="block mt-2 text-xs text-primary font-bold hover:underline mb-2">
                                                 View Details
                                             </a>
                                             <Button

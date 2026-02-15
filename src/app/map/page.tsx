@@ -13,7 +13,7 @@ export default async function MapPage() {
     // Fetch upcoming APPROVED events
     const events = await prisma.event.findMany({
         where: {
-            status: { in: ["APPROVED", "PUBLISHED"] },
+            status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] },
             endDateTime: {
                 gte: new Date(),
             },
