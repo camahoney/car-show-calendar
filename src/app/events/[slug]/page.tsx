@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { format } from "date-fns";
 import { MapPin, Calendar, Globe, Ticket, User, Info, DollarSign, CloudRain, Heart, Map as MapIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,14 +23,14 @@ import { EventGallery } from "@/components/event-gallery";
 import { UpgradeEventButton } from "@/components/upgrade-event-button";
 
 interface PageProps {
-    params: Promise<{ id: string }>;
+    params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
-    const { id } = await params;
+    const { slug } = await params;
     const event = await prisma.event.findFirst({
         where: {
-            OR: [{ id }, { slug: id }]
+            OR: [{ id: slug }, { slug: slug }]
         },
     });
 
@@ -49,12 +49,12 @@ import { getMyVendor } from "@/app/actions/vendor";
 import { VendorBoostButton } from "@/components/vendor-boost-button";
 
 export default async function EventPage({ params }: PageProps) {
-    const { id } = await params;
+    const { slug } = await params;
     const session = await getServerSession(authOptions);
 
     const event = await prisma.event.findFirst({
         where: {
-            OR: [{ id }, { slug: id }]
+            OR: [{ id: slug }, { slug: slug }]
         },
         include: {
             organizer: true,
@@ -68,6 +68,11 @@ export default async function EventPage({ params }: PageProps) {
     });
 
     if (!event) notFound();
+
+    // SEO Redirect: If accessed via ID but has a slug, redirect to slug
+    if (event.slug && event.slug !== slug) {
+        redirect(`/events/${event.slug}`);
+    }
 
     // User context data
     let userVehicles: any[] = [];

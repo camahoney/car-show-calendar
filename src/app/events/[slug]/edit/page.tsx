@@ -3,17 +3,19 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { EventForm } from "@/components/event-form";
 
-export default async function EditEventPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditEventPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
-    const eventId = resolvedParams.id;
+    const slug = resolvedParams.slug; // Could be slug or id
 
     const user = await getCurrentUser();
     if (!user) {
         redirect("/api/auth/signin");
     }
 
-    const event = await prisma.event.findUnique({
-        where: { id: eventId }
+    const event = await prisma.event.findFirst({
+        where: {
+            OR: [{ id: slug }, { slug: slug }]
+        }
     });
 
     if (!event) {
