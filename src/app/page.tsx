@@ -7,19 +7,25 @@ import { EventExplorer } from "@/components/home/event-explorer";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // Fetch optimized events
-  const dbCall = prisma.event.findMany({
-    where: { status: { in: ["APPROVED", "SUBMITTED"] } },
-    orderBy: [{ startDateTime: 'asc' }],
-    take: 50,
-    include: { organizer: true }
-  });
+  let events = [];
+  try {
+    const dbCall = prisma.event.findMany({
+      where: { status: { in: ["APPROVED", "SUBMITTED"] } },
+      orderBy: [{ startDateTime: 'asc' }],
+      take: 50,
+      include: { organizer: true }
+    });
 
-  const timeout = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  const events = await Promise.race([
-    dbCall,
-    timeout(4000).then(() => [])
-  ]) as any[];
+    const timeout = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    events = await Promise.race([
+      dbCall,
+      timeout(4000).then(() => [])
+    ]) as any[];
+  } catch (error) {
+    console.error("Homepage DB Error:", error);
+    // Fallback empty events or handle gracefully
+    events = [];
+  }
 
   return (
     <div className="min-h-screen bg-background">
