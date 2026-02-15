@@ -232,6 +232,21 @@ export async function claimEvent(eventId: string) {
     if (!event) return { error: "Event not found" };
     if (!event.isClaimable) return { error: "This event is not available for claiming." };
 
+    // Check Subscription Status
+    const subscription = await prisma.subscription.findFirst({
+        where: {
+            userId: session.user.id,
+            status: { in: ['active', 'trialing'] }
+        }
+    });
+
+    // Allow Admins to bypass (optional, but good practice if you have roles)
+    // const isAdmin = session.user.role === 'ADMIN';
+
+    if (!subscription) {
+        return { error: "Subscription Required" };
+    }
+
     // Get/Create Organizer Profile
     let organizer = await prisma.organizerProfile.findUnique({
         where: { userId: session.user.id }

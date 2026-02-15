@@ -32,6 +32,9 @@ export function ClaimEventButton({ eventId }: { eventId: string }) {
             } else if (result.error === "Unauthorized") {
                 toast.error("Please sign in to claim this event.");
                 router.push(`/signin?callbackUrl=/events/${eventId}`);
+            } else if (result.error === "Subscription Required") {
+                toast.error("This feature is exclusive to Premium members.");
+                router.push("/pricing");
             } else {
                 toast.error(result.error || "Failed to claim event");
             }
@@ -61,6 +64,7 @@ export function ClaimEventButton({ eventId }: { eventId: string }) {
                         <li>Take full control of this listing.</li>
                         <li>Get a <b>FREE Standard Upgrade</b> (Normally $29).</li>
                         <li>Unlock analytics and editing features.</li>
+                        <li className="text-indigo-400 font-semibold">Requires Active Subscription</li>
                     </ul>
                     <p className="text-sm font-medium text-destructive">
                         Note: Falsely claiming events may result in account suspension.
