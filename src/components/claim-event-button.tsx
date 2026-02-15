@@ -62,7 +62,7 @@ export function ClaimEventButton({ eventId }: { eventId: string }) {
                 <div className="space-y-4 py-4">
                     <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
                         <li>Take full control of this listing.</li>
-                        <li>Get a <b>FREE Standard Upgrade</b> (Normally $29).</li>
+                        <li><b>Includes Standard Upgrade</b> ($29 Value).</li>
                         <li>Unlock analytics and editing features.</li>
                         <li className="text-indigo-400 font-semibold">Requires Active Subscription</li>
                     </ul>

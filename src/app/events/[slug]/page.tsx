@@ -98,7 +98,7 @@ export default async function EventPage({ params }: PageProps) {
         if (currentVendor) {
             const boost = await prisma.vendorAppearance.findUnique({
                 where: {
-                    eventId: {
+                    eventId_vendorId: {
                         eventId: event.id,
                         vendorId: currentVendor.id
                     }
