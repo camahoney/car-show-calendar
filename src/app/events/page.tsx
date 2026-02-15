@@ -56,7 +56,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
 
     // Build Prisma Where Clause
     const whereClause: any = {
-        status: { in: ["APPROVED", "PUBLISHED"] },
+        status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] },
         endDateTime: dateFilter,
     };
 
@@ -89,7 +89,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
                 include: { organizer: true }
             }),
             prisma.event.findMany({
-                where: { status: { in: ["APPROVED", "PUBLISHED"] }, endDateTime: { gte: new Date() } },
+                where: { status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] }, endDateTime: { gte: new Date() } },
                 select: { state: true },
                 distinct: ['state'],
                 orderBy: { state: 'asc' }
