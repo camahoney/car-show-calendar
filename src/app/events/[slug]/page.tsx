@@ -98,8 +98,8 @@ export default async function EventPage({ params }: PageProps) {
         if (currentVendor) {
             const boost = await prisma.vendorAppearance.findUnique({
                 where: {
-                    eventId_vendorId: {
-                        eventId: id,
+                    eventId: {
+                        eventId: event.id,
                         vendorId: currentVendor.id
                     }
                 }
@@ -401,7 +401,7 @@ export default async function EventPage({ params }: PageProps) {
                             )}
 
                             {/* Upgrade Prompt for Viewer (Optional - could implement logic to show "Upgrade" if owner) */}
-                            {event.isClaimable && (
+                            {(event.isClaimable || event.isPreRelease) && (
                                 <div className="mt-6">
                                     <ClaimEventButton eventId={event.id} />
                                     <p className="text-xs text-center text-muted-foreground mt-2">

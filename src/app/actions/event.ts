@@ -230,7 +230,7 @@ export async function claimEvent(eventId: string) {
     });
 
     if (!event) return { error: "Event not found" };
-    if (!event.isClaimable) return { error: "This event is not available for claiming." };
+    if (!event.isClaimable && !event.isPreRelease) return { error: "This event is not available for claiming." };
 
     // Check Subscription Status
     const subscription = await prisma.subscription.findFirst({
