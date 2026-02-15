@@ -49,7 +49,7 @@ export function SiteFooter() {
                     <div className="space-y-4">
                         <h3 className="font-bold text-white">Connect</h3>
                         <div className="flex space-x-4">
-                            <Link href="https://autoshowlist.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
+                            <Link href="https://www.facebook.com/profile.php?id=61587487620694" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
                                 <Facebook className="h-5 w-5" />
                                 <span className="sr-only">Facebook</span>
                             </Link>
