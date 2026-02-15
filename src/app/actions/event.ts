@@ -7,6 +7,8 @@ import { authOptions } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 import { geocodeAddress } from "@/lib/geocoding";
+import { slugify } from "@/lib/utils";
+import { format } from "date-fns";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function createEvent(data: any) {
@@ -54,10 +56,27 @@ export async function createEvent(data: any) {
         zip
     });
 
+    // Generate SEO-friendly slug
+    const dateStr = format(new Date(startDateTime), 'yyyy-MM-dd');
+    const baseSlug = slugify(`${title}-${city}-${dateStr}`);
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Ensure uniqueness
+    while (true) {
+        const existing = await prisma.event.findUnique({
+            where: { slug } // slug is @unique in schema
+        });
+        if (!existing) break;
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+    }
+
     try {
         const event = await prisma.event.create({
             data: {
                 organizerId: organizer.id,
+                slug, // Add the generated slug
                 title,
                 description: description || "No description provided.",
                 startDateTime: new Date(startDateTime),
