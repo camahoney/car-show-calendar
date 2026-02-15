@@ -11,16 +11,16 @@ import { slugify } from "@/lib/utils";
 import { format } from "date-fns";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createEvent(data: any) {
+export async function createEvent(data: any): Promise<{ success: true; eventId: string; slug: string } | { success: false; error: string; details?: any }> {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-        return { error: "Unauthorized" };
+        return { success: false, error: "Unauthorized" };
     }
 
     const result = eventSchema.safeParse(data);
     if (!result.success) {
-        return { error: "Validation failed", details: result.error.flatten() };
+        return { success: false, error: "Validation failed", details: result.error.flatten() };
     }
 
     const {
@@ -113,28 +113,29 @@ export async function createEvent(data: any) {
         revalidatePath("/");
         revalidatePath("/dashboard");
         revalidatePath("/map");
-        return { success: true, eventId: event.id };
+        revalidatePath("/map");
+        return { success: true, eventId: event.id, slug: event.slug };
 
     } catch (error) {
         console.error("Failed to create event:", error);
-        return { error: "Database error" };
+        return { success: false, error: "Database error" };
     }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateEvent(data: any) {
+export async function updateEvent(data: any): Promise<{ success: true; eventId: string; slug?: string } | { success: false; error: string; details?: any }> {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
-        return { error: "Unauthorized" };
+        return { success: false, error: "Unauthorized" };
     }
 
     const { id, ...formData } = data;
-    if (!id) return { error: "Missing Event ID" };
+    if (!id) return { success: false, error: "Missing Event ID" };
 
     const result = eventSchema.safeParse(formData);
     if (!result.success) {
-        return { error: "Validation failed", details: result.error.flatten() };
+        return { success: false, error: "Validation failed", details: result.error.flatten() };
     }
 
     const {
@@ -151,7 +152,7 @@ export async function updateEvent(data: any) {
         include: { organizer: true }
     });
 
-    if (!existingEvent) return { error: "Event not found" };
+    if (!existingEvent) return { success: false, error: "Event not found" };
 
     // Check ownership logic...
     const organizerProfile = await prisma.organizerProfile.findUnique({
@@ -160,7 +161,7 @@ export async function updateEvent(data: any) {
 
     if (!organizerProfile || existingEvent.organizerId !== organizerProfile.id) {
         if (session.user.role !== "ADMIN") {
-            return { error: "Unauthorized: You do not own this event" };
+            return { success: false, error: "Unauthorized: You do not own this event" };
         }
     }
 
@@ -212,10 +213,14 @@ export async function updateEvent(data: any) {
         revalidatePath("/dashboard");
         revalidatePath("/dashboard/events");
         revalidatePath("/map");
-        return { success: true, eventId: id };
+
+        // Fetch updated event to get slug
+        const updated = await prisma.event.findUnique({ where: { id } });
+        return { success: true, eventId: id, slug: updated?.slug || undefined };
+
     } catch (error) {
         console.error("Failed to update event:", error);
-        return { error: "Database error" };
+        return { success: false, error: "Database error" };
     }
 }
 

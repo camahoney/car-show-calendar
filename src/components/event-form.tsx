@@ -57,7 +57,6 @@ export function EventForm({ initialData }: EventFormProps) {
             websiteUrl: "",
             facebookUrl: "",
             registrationUrl: "",
-            registrationUrl: "",
             isPreRelease: false,
             source: "USER",
         },
@@ -115,7 +114,7 @@ export function EventForm({ initialData }: EventFormProps) {
             if (result.success) {
                 // If STANDARD and new event, maybe redirect to payment?
                 // For now, standard flow.
-                router.push(`/events/${result.eventId}`);
+                router.push(`/events/${result.slug || result.eventId}`);
                 router.refresh();
             } else {
                 console.error(result.error);

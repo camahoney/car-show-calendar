@@ -17,7 +17,7 @@ export function EventCard({ event }: EventCardProps) {
     const eventDate = new Date(event.startDateTime);
 
     return (
-        <Link href={`/events/${event.id}`} className="group block h-full">
+        <Link href={`/events/${event.slug || event.id}`} className="group block h-full">
             <div className={cn(
                 "relative h-full overflow-hidden rounded-2xl bg-card border border-white/5 shadow-md transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1",
                 isFeatured ? "ring-1 ring-primary/40 shadow-primary/10" : ""

@@ -2,9 +2,28 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = "https://autoshowlist.com";
+    const baseUrl = process.env.NEXTAUTH_URL || "https://carshowcalendar.vercel.app"; // Fallback URL
 
-    // 1. Static Routes
+    const events = await prisma.event.findMany({
+        where: {
+            AND: [
+                { status: "PUBLISHED" },
+                { slug: { not: null } },
+            ]
+        },
+        select: { slug: true, updatedAt: true },
+    });
+
+    // Filter out any potential null slugs (though the query safeguards this) and map
+    const eventRoutes = events
+        .filter(event => event.slug)
+        .map((event) => ({
+            url: `${baseUrl}/events/${event.slug}`,
+            lastModified: event.updatedAt,
+            changeFrequency: "daily" as const,
+            priority: 0.9,
+        }));
+
     const staticRoutes = [
         "",
         "/events",
@@ -20,22 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: route === "" ? 1.0 : 0.8,
     }));
 
-    // 2. Dynamic Events
-    const events = await prisma.event.findMany({
-        where: { status: "PUBLISHED" }, // Only published events
-        select: { slug: true, updatedAt: true },
-    });
-
-    const eventRoutes = events.map((event) => ({
-        url: `${baseUrl}/events/${event.slug}`,
-        lastModified: event.updatedAt,
-        changeFrequency: "daily" as const, // Events change often
-        priority: 0.9,
-    }));
-
     // 3. Dynamic Locations (States)
-    // We can hardcode 50 states or fetch from used locations.
-    // Converting distinct states from DB is better but Prisma Distinct is easy.
     const locations = await prisma.event.findMany({
         where: { status: "PUBLISHED" },
         select: { state: true },
