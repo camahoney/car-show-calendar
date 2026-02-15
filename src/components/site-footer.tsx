@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Facebook } from "lucide-react";
 
 export function SiteFooter() {
     return (
@@ -49,17 +49,26 @@ export function SiteFooter() {
                     <div className="space-y-4">
                         <h3 className="font-bold text-white">Connect</h3>
                         <div className="flex space-x-4">
-                            <Link href="https://facebook.com/carshowcalendar" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
+                            <Link href="https://autoshowlist.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
                                 <Facebook className="h-5 w-5" />
                                 <span className="sr-only">Facebook</span>
                             </Link>
-                            <Link href="https://twitter.com/carshowcalendar" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
-                                <Twitter className="h-5 w-5" />
-                                <span className="sr-only">Twitter</span>
-                            </Link>
-                            <Link href="https://instagram.com/carshowcalendar" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
-                                <Instagram className="h-5 w-5" />
-                                <span className="sr-only">Instagram</span>
+                            <Link href="https://www.tiktok.com/@autoshowlist.com?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-white transition-colors">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="h-5 w-5"
+                                >
+                                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+                                </svg>
+                                <span className="sr-only">TikTok</span>
                             </Link>
                         </div>
                         <p className="text-xs text-muted-foreground">
