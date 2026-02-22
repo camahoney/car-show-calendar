@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ImageUpload } from "@/components/image-upload";
+import { SimpleImageUpload } from "@/components/simple-image-upload";
 import { VendorCategory } from "@prisma/client";
 
 const vendorSchema = z.object({
@@ -99,9 +99,10 @@ export function ManageVendorForm({ initialData }: ManageVendorFormProps) {
                                 <FormItem>
                                     <FormLabel className="text-white">Logo</FormLabel>
                                     <FormControl>
-                                        <ImageUpload
+                                        <SimpleImageUpload
                                             value={field.value || ""}
                                             onChange={(url) => field.onChange(url)}
+                                            label="Upload Company Logo"
                                         />
                                     </FormControl>
                                     <FormDescription>Square ratio recommended</FormDescription>
@@ -116,9 +117,10 @@ export function ManageVendorForm({ initialData }: ManageVendorFormProps) {
                                 <FormItem>
                                     <FormLabel className="text-white">Banner Image</FormLabel>
                                     <FormControl>
-                                        <ImageUpload
+                                        <SimpleImageUpload
                                             value={field.value || ""}
                                             onChange={(url) => field.onChange(url)}
+                                            label="Upload Banner Image"
                                         />
                                     </FormControl>
                                     <FormDescription>Wide landscape image (e.g. 1200x400)</FormDescription>

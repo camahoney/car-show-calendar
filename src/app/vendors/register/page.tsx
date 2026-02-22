@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { ImageUpload } from "@/components/image-upload";
+import { SimpleImageUpload } from "@/components/simple-image-upload";
 
 const vendorSchema = z.object({
     businessName: z.string().min(2, "Name must be at least 2 characters"),
@@ -164,9 +164,10 @@ export default function VendorRegistrationPage() {
                                         <FormItem>
                                             <FormLabel className="sr-only">Logo</FormLabel>
                                             <FormControl>
-                                                <ImageUpload
+                                                <SimpleImageUpload
                                                     value={field.value || ""}
                                                     onChange={(url) => field.onChange(url)}
+                                                    label="Upload Company Logo"
                                                 />
                                             </FormControl>
                                             <FormDescription className="text-center text-xs">

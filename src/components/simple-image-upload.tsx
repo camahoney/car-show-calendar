@@ -12,9 +12,10 @@ interface SimpleImageUploadProps {
     value: string;
     onChange: (value: string) => void;
     disabled?: boolean;
+    label?: string;
 }
 
-export function SimpleImageUpload({ value, onChange, disabled }: SimpleImageUploadProps) {
+export function SimpleImageUpload({ value, onChange, disabled, label = "Upload Event Poster" }: SimpleImageUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -109,7 +110,7 @@ export function SimpleImageUpload({ value, onChange, disabled }: SimpleImageUplo
                 <Image
                     fill
                     style={{ objectFit: "cover" }}
-                    alt="Event Poster"
+                    alt="Uploaded image"
                     src={value}
                     className="transition-transform duration-500 group-hover:scale-105"
                 />
@@ -175,7 +176,7 @@ export function SimpleImageUpload({ value, onChange, disabled }: SimpleImageUplo
                     </div>
                     <div className="text-center space-y-1">
                         <p className="text-lg font-medium text-white group-hover:text-primary transition-colors">
-                            Click to upload poster
+                            {label}
                         </p>
                         <p className="text-xs text-muted-foreground">
                             JPG, PNG, WEBP up to 10MB
