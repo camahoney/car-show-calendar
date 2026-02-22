@@ -70,22 +70,22 @@ export default function MapView({ events }: MapViewProps) {
 
     const handleRadiusSearch = useCallback(async () => {
         if (!searchCity.trim()) {
-            toast.error("Enter a city name");
+            toast.error("Enter a location to search");
             return;
         }
         setIsSearching(true);
         try {
             const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
             const res = await fetch(
-                `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchCity)}.json?access_token=${token}&country=US&types=place&limit=1`
+                `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(searchCity)}.json?access_token=${token}&country=US&limit=1`
             );
             const data = await res.json();
             if (data.features && data.features.length > 0) {
                 const [lng, lat] = data.features[0].center;
                 setSearchCenter({ lat, lng });
-                toast.success(`Showing events within ${radius} mi of ${data.features[0].text}`);
+                toast.success(`Showing events within ${radius} mi of ${data.features[0].place_name}`);
             } else {
-                toast.error("City not found. Try a different search.");
+                toast.error("Location not found. Try 'Chicago, IL' or a zip code.");
             }
         } catch {
             toast.error("Search failed. Please try again.");
@@ -134,7 +134,7 @@ export default function MapView({ events }: MapViewProps) {
                 <div className="flex items-center gap-2 flex-1 min-w-[200px]">
                     <Search className="h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="City name (e.g. Chicago)"
+                        placeholder="City, State or zip code"
                         className="bg-black/20 border-white/10 h-9"
                         value={searchCity}
                         onChange={(e) => setSearchCity(e.target.value)}
