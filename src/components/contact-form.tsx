@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Loader2, Send } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const initialState = {
     success: false,
@@ -35,6 +36,14 @@ export function ContactForm() {
 
     return (
         <form action={formAction} className="space-y-6">
+            {/* Honeypot field - invisible to humans, filled by bots */}
+            <div className="absolute opacity-0 h-0 w-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+                <label htmlFor="website">Website</label>
+                <input type="text" id="website" name="website" tabIndex={-1} autoComplete="off" />
+            </div>
+            {/* Timestamp for timing check */}
+            <input type="hidden" name="_loaded" value={Date.now()} />
+
             {state.message && !state.success && (
                 <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
                     {state.message}

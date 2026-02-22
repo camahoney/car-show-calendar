@@ -12,7 +12,41 @@ const contactSchema = z.object({
     message: z.string().min(10, "Message must be at least 10 characters"),
 })
 
+// Spam keyword blocklist - common SEO/scam phrases
+const SPAM_KEYWORDS = [
+    "google search index",
+    "searchregister",
+    "submit your website",
+    "search engine submission",
+    "domain registration",
+    "seo service",
+    "backlink",
+    "link building",
+    "website traffic",
+    "online search results",
+]
+
 export async function submitContactForm(prevState: any, formData: FormData) {
+    // --- HONEYPOT CHECK ---
+    // If the hidden "website" field is filled, it's a bot
+    const honeypot = formData.get("website");
+    if (honeypot) {
+        // Silently reject — don't reveal it's a spam check
+        console.log("[SPAM] Honeypot triggered", { honeypot });
+        return { success: true, message: "Message sent! We'll get back to you soon." }
+    }
+
+    // --- TIMING CHECK ---
+    // Bots submit forms in milliseconds; real users take a few seconds
+    const formLoadedAt = formData.get("_loaded");
+    if (formLoadedAt) {
+        const elapsed = Date.now() - Number(formLoadedAt);
+        if (elapsed < 2000) { // Less than 2 seconds
+            console.log("[SPAM] Timing check failed", { elapsed });
+            return { success: true, message: "Message sent! We'll get back to you soon." }
+        }
+    }
+
     const data = {
         name: formData.get("name"),
         email: formData.get("email"),
@@ -31,6 +65,14 @@ export async function submitContactForm(prevState: any, formData: FormData) {
     }
 
     const { name, email, subject, message } = validatedFields.data
+
+    // --- SPAM KEYWORD CHECK ---
+    const fullText = `${name} ${email} ${subject} ${message}`.toLowerCase();
+    const isSpam = SPAM_KEYWORDS.some(keyword => fullText.includes(keyword));
+    if (isSpam) {
+        console.log("[SPAM] Keyword match", { name, email, subject });
+        return { success: true, message: "Message sent! We'll get back to you soon." }
+    }
 
     try {
         // Send email to Admin
