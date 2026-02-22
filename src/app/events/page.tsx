@@ -77,6 +77,41 @@ export default async function EventsPage({ searchParams }: PageProps) {
         };
     }
 
+    // Event Type Filter (judgedOrCruiseIn)
+    if (params.type && params.type !== 'all') {
+        whereClause.judgedOrCruiseIn = params.type as string;
+    }
+
+    // Price Range Filter (entryFee)
+    if (params.price) {
+        switch (params.price) {
+            case 'free':
+                whereClause.OR = [
+                    ...(whereClause.OR || []),
+                    { entryFee: null },
+                    { entryFee: 0 },
+                ];
+                // If we already have OR from search, we need AND logic
+                if (query) {
+                    // Wrap search OR into AND with price filter
+                    const searchOR = whereClause.OR.filter((c: any) => !('entryFee' in c));
+                    const priceOR = whereClause.OR.filter((c: any) => 'entryFee' in c);
+                    whereClause.AND = [
+                        { OR: searchOR },
+                        { OR: priceOR },
+                    ];
+                    delete whereClause.OR;
+                }
+                break;
+            case 'under20':
+                whereClause.entryFee = { lte: 20 };
+                break;
+            case 'under50':
+                whereClause.entryFee = { lte: 50 };
+                break;
+        }
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let events: any[] = [];
     let states: string[] = [];

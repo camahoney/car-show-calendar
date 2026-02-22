@@ -17,6 +17,8 @@ export function EventFilters({ states = [] }: { states?: string[] }) {
     // Initial State from URL
     const currentFilter = searchParams.get("filter") || "all";
     const currentState = searchParams.get("state") || "all";
+    const currentType = searchParams.get("type") || "all";
+    const currentPrice = searchParams.get("price") || "all";
     const currentSearch = searchParams.get("q") || "";
     const [searchValue, setSearchValue] = useState(currentSearch);
 
@@ -84,6 +86,36 @@ export function EventFilters({ states = [] }: { states?: string[] }) {
                                 {states.map((state) => (
                                     <SelectItem key={state} value={state}>{state}</SelectItem>
                                 ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Event Type Filter */}
+                    <div>
+                        <Select value={currentType} onValueChange={(v) => updateParams({ type: v === 'all' ? null : v })}>
+                            <SelectTrigger className="w-[150px] bg-transparent border-white/10 text-white rounded-full h-9">
+                                <SelectValue placeholder="Event Type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Types</SelectItem>
+                                <SelectItem value="JUDGED">Judged</SelectItem>
+                                <SelectItem value="CRUISE_IN">Cruise-In</SelectItem>
+                                <SelectItem value="BOTH">Both</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Price Range Filter */}
+                    <div>
+                        <Select value={currentPrice} onValueChange={(v) => updateParams({ price: v === 'all' ? null : v })}>
+                            <SelectTrigger className="w-[150px] bg-transparent border-white/10 text-white rounded-full h-9">
+                                <SelectValue placeholder="Price Range" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Any Price</SelectItem>
+                                <SelectItem value="free">Free Entry</SelectItem>
+                                <SelectItem value="under20">Under $20</SelectItem>
+                                <SelectItem value="under50">Under $50</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

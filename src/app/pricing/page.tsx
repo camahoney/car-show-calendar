@@ -87,7 +87,7 @@ export default function PricingPage() {
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> <b>Homepage Hero Placement</b></li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Priority placement above organic listings</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> "Featured" Badge</li>
-                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Weekly Email Newsletter Spot</li>
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Social Media Spotlight</li>
                                     </ul>
                                 </CardContent>
                                 <CardFooter>
