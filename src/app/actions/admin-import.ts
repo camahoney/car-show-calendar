@@ -9,8 +9,8 @@ import { parse } from "date-fns";
 
 export async function importEvents(jsonString: string) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user /* check admin role if needed */) {
-        return { error: "Unauthorized" };
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return { error: "Unauthorized — Admin access required" };
     }
 
     let events;

@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -7,6 +9,12 @@ cloudinary.config({
 });
 
 export async function POST(request: Request) {
+    // Require authentication before signing upload params
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+
     const body = await request.json();
     const { paramsToSign } = body;
 
