@@ -9,8 +9,17 @@ export async function getOrganizerStats() {
     if (!user) return { success: false, error: "Unauthorized" };
 
     try {
+        // Must look up organizer profile first — organizerId on events is the profile ID, not user ID
+        const organizerProfile = await prisma.organizerProfile.findUnique({
+            where: { userId: user.id }
+        });
+
+        if (!organizerProfile) {
+            return { success: false, error: "No organizer profile found" };
+        }
+
         const events = await prisma.event.findMany({
-            where: { organizerId: user.id },
+            where: { organizerId: organizerProfile.id },
             select: {
                 id: true,
                 title: true,
