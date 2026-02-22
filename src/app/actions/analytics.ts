@@ -23,16 +23,24 @@ export async function getOrganizerStats() {
             select: {
                 id: true,
                 title: true,
+                slug: true,
                 views: true,
                 clicks: true,
-                createdAt: true, // simplified for "views over time" proxy if we don't have daily analytics table yet
+                status: true,
+                tier: true,
+                startDateTime: true,
+                endDateTime: true,
+                createdAt: true,
+                city: true,
+                state: true,
                 _count: {
                     select: {
                         saves: true,
                         votes: true
                     }
                 }
-            }
+            },
+            orderBy: { views: "desc" }
         });
 
         // Aggregates
@@ -41,14 +49,46 @@ export async function getOrganizerStats() {
         const totalSaves = events.reduce((acc, e) => acc + e._count.saves, 0);
         const totalVotes = events.reduce((acc, e) => acc + e._count.votes, 0);
 
-        // Chart Data (Mocking daily history for now since we only store totals on Event model)
-        // In a real production app, we would have an AnalyticsEvent table tracking daily stats.
-        // For V1, we will map individual events as "bars" to show which events are performing best.
-        const eventPerformance = events.map(e => ({
-            name: e.title.substring(0, 15) + (e.title.length > 15 ? "..." : ""),
+        // Conversion rate (clicks / views)
+        const conversionRate = totalViews > 0 ? ((totalClicks / totalViews) * 100) : 0;
+
+        // Per-event detailed table (all events, sorted by views)
+        const eventDetails = events.map(e => ({
+            id: e.id,
+            title: e.title,
+            slug: e.slug,
             views: e.views,
-            clicks: e.clicks
-        })).sort((a, b) => b.views - a.views).slice(0, 10); // Top 10
+            clicks: e.clicks,
+            saves: e._count.saves,
+            votes: e._count.votes,
+            status: e.status,
+            tier: e.tier,
+            conversionRate: e.views > 0 ? ((e.clicks / e.views) * 100) : 0,
+            startDate: e.startDateTime.toISOString(),
+            location: `${e.city}, ${e.state}`,
+        }));
+
+        // Bar chart data (top 10)
+        const eventPerformance = eventDetails.slice(0, 10).map(e => ({
+            name: e.title.substring(0, 18) + (e.title.length > 18 ? "…" : ""),
+            views: e.views,
+            clicks: e.clicks,
+            saves: e.saves,
+        }));
+
+        // Status breakdown for pie/donut
+        const statusBreakdown = events.reduce((acc, e) => {
+            const s = e.status || "DRAFT";
+            acc[s] = (acc[s] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+
+        // Tier breakdown
+        const tierBreakdown = events.reduce((acc, e) => {
+            const t = e.tier || "FREE_BASIC";
+            acc[t] = (acc[t] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
 
         return {
             success: true,
@@ -57,7 +97,12 @@ export async function getOrganizerStats() {
                 totalClicks,
                 totalSaves,
                 totalVotes,
-                eventPerformance
+                conversionRate,
+                eventCount: events.length,
+                eventPerformance,
+                eventDetails,
+                statusBreakdown,
+                tierBreakdown,
             }
         };
 
