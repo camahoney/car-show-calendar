@@ -9,7 +9,8 @@ export async function getOptimizedRoute(coordinates: [number, number][]): Promis
     if (!token || coordinates.length < 2) return null;
 
     // Mapbox expects "lng,lat" formatted coordinates separated by semicolons
-    const coordString = coordinates.map(c => `${c[1]},${c[0]}`).join(';');
+    // Input coordinates are already [lng, lat]
+    const coordString = coordinates.map(c => `${c[0]},${c[1]}`).join(';');
     const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordString}?geometries=geojson&overview=full&access_token=${token}`;
 
     try {
