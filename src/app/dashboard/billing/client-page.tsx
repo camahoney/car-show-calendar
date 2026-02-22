@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { activateStandardListing } from "@/app/actions/billing";
-import { createStandardUpgradeSession, createFeaturedUpgradeSession } from "@/app/actions/stripe";
+import { createStandardUpgradeSession, createFeaturedUpgradeSession, createFoundingVendorSession } from "@/app/actions/stripe";
 
 interface BillingClientProps {
     isVerifiedOrganizer: boolean;
@@ -50,8 +50,10 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                 await createStandardUpgradeSession(eventId);
             } else if (type === "EVENT_FEATURED" && eventId) {
                 await createFeaturedUpgradeSession(eventId);
+            } else if (type === "VENDOR_PRO") {
+                await createFoundingVendorSession();
             } else {
-                toast.error("Organizer/Vendor subscription checkout not yet implemented in this demo.");
+                toast.error("Organizer subscription checkout coming soon.");
                 setLoading(null);
             }
         } catch (error) {

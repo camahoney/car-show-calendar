@@ -106,3 +106,48 @@ export async function createStandardUpgradeSession(eventId: string) {
         redirect(checkoutSession.url);
     }
 }
+
+export async function createFoundingVendorSession() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+        throw new Error("Unauthorized");
+    }
+
+    // Check if user already has a PRO vendor subscription
+    const vendor = await prisma.vendor.findUnique({
+        where: { userId: session.user.id },
+    });
+
+    if (vendor?.subscriptionTier === "PRO") {
+        throw new Error("You are already a Founding Vendor.");
+    }
+
+    const checkoutSession = await stripe.checkout.sessions.create({
+        mode: "payment",
+        allow_promotion_codes: true,
+        payment_method_types: ["card"],
+        line_items: [
+            {
+                price_data: {
+                    currency: "usd",
+                    product_data: {
+                        name: "Founding Vendor Membership",
+                        description: "Verified Blue Badge, Enhanced Profile, Priority Search Visibility, Attach Profile to Events. 1 Year Membership.",
+                    },
+                    unit_amount: 9900, // $99.00
+                },
+                quantity: 1,
+            },
+        ],
+        metadata: {
+            userId: session.user.id,
+            type: "VENDOR_PRO",
+        },
+        success_url: `${process.env.NEXTAUTH_URL}/dashboard/billing?tab=vendors&success=true`,
+        cancel_url: `${process.env.NEXTAUTH_URL}/dashboard/billing?tab=vendors&canceled=true`,
+    });
+
+    if (checkoutSession.url) {
+        redirect(checkoutSession.url);
+    }
+}
