@@ -57,11 +57,11 @@ export default function TermsPage() {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">6. Payments, Subscriptions, and Refunds</h2>
                     <p>
-                        Certain aspects of the Service, such as "Vendor Pro" memberships, "Event Boosts," and "Featured Listings," may be provided for a fee.
+                        Certain aspects of the Service, such as "Founding Vendor" memberships, "Event Boosts," and "Featured Listings," may be provided for a fee.
                     </p>
                     <ul className="list-disc pl-5 space-y-2 mt-2">
                         <li><strong>Payment Processing:</strong> We use Stripe, Inc. as our third-party payment processor. By making a payment, you agree to comply with Stripe's Services Agreement.</li>
-                        <li><strong>Subscriptions:</strong> Paid subscriptions (e.g., Vendor Pro) will automatically renew at the end of each billing cycle unless you cancel them through your account management page.</li>
+                        <li><strong>Subscriptions:</strong> Paid subscriptions (e.g., Founding Vendor) will automatically renew at the end of each billing cycle unless you cancel them through your account management page.</li>
                         <li><strong>No Refunds:</strong> Except as required by law or stated in our Refund Policy, all fees are non-refundable once the service has been rendered (e.g., the listing has been published).</li>
                     </ul>
                 </section>

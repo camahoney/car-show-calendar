@@ -187,7 +187,7 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                                 <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> <b>Homepage Feature Spot</b></li>
                                 <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Top of Search Results</li>
                                 <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Featured Badge</li>
-                                <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Weekly Email Inclusion</li>
+                                <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-orange-500" /> Social Media Spotlight</li>
                             </ul>
                         </CardContent>
                         <CardFooter>
@@ -269,7 +269,7 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                     <Card className="bg-card border-blue-500/20 bg-blue-500/5 glow shadow-blue-900/10">
                         <CardHeader>
                             <div className="flex justify-between items-center">
-                                <CardTitle className="text-blue-400">Vendor Pro</CardTitle>
+                                <CardTitle className="text-blue-400">Founding Vendor</CardTitle>
                                 {isProVendor ? (
                                     <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">ACTIVE</span>
                                 ) : (
@@ -297,7 +297,7 @@ export function BillingClient({ isVerifiedOrganizer, isProVendor }: BillingClien
                         </CardContent>
                         <CardFooter>
                             <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => handleCheckout("VENDOR_PRO")} disabled={isProVendor || !!loading}>
-                                {isProVendor ? "Pro Active" : (loading === "VENDOR_PRO" ? <Loader2 className="animate-spin" /> : "Join as Pro Vendor")}
+                                {isProVendor ? "Founder Active" : (loading === "VENDOR_PRO" ? <Loader2 className="animate-spin" /> : "Become a Founding Vendor")}
                             </Button>
                         </CardFooter>
                     </Card>

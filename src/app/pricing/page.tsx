@@ -107,7 +107,7 @@ export default function PricingPage() {
                                 <CardContent className="flex-1">
                                     <div className="text-4xl font-bold mb-6 text-indigo-300">$69<span className="text-sm font-normal text-muted-foreground">/mo</span></div>
                                     <ul className="space-y-3 text-sm">
-                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> <b>Pro Vendor Profile</b> ($29 value)</li>
+                                        <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> <b>Founding Vendor Profile</b> ($29 value)</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> <b>1 Free Featured Event</b> / mo</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> Unlimited Standard Events</li>
                                         <li className="flex items-center text-white"><Check className="mr-2 h-4 w-4 text-indigo-500" /> Priority Support</li>
@@ -166,11 +166,11 @@ export default function PricingPage() {
                                 </CardFooter>
                             </Card>
 
-                            {/* Pro Vendor */}
+                            {/* Founding Vendor */}
                             <Card className="flex flex-col border-blue-500/50 bg-blue-500/5 relative overflow-hidden shadow-2xl shadow-blue-500/10 scale-105">
                                 <div className="absolute top-0 right-0 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">RECOMMENDED</div>
                                 <CardHeader>
-                                    <CardTitle className="text-blue-400">Vendor Pro</CardTitle>
+                                    <CardTitle className="text-blue-400">Founding Vendor</CardTitle>
                                     <CardDescription>Scale your automotive business.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex-1">
@@ -192,7 +192,7 @@ export default function PricingPage() {
                                 </CardContent>
                                 <CardFooter>
                                     <Button className="w-full font-bold bg-blue-600 hover:bg-blue-700" asChild>
-                                        <Link href="/dashboard/billing?tab=vendors">Go Pro</Link>
+                                        <Link href="/dashboard/billing?tab=vendors">Become a Founder</Link>
                                     </Button>
                                 </CardFooter>
                             </Card>

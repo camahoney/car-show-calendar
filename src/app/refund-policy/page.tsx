@@ -29,9 +29,9 @@ export default function RefundPage() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-4">2. Vendor Pro Subscriptions</h2>
+                    <h2 className="text-2xl font-bold text-white mb-4">2. Founding Vendor Subscriptions</h2>
                     <p>
-                        <strong>Cancellation:</strong> You may cancel your Vendor Pro subscription at any time via your account settings. If you cancel, your subscription will remain active until the end of the current billing period, and you will not be charged for the next cycle.
+                        <strong>Cancellation:</strong> You may cancel your Founding Vendor subscription at any time via your account settings. If you cancel, your subscription will remain active until the end of the current billing period, and you will not be charged for the next cycle.
                     </p>
                     <p className="mt-2">
                         <strong>Refunds:</strong> We do not offer prorated refunds for partial billing periods. However, if you believe you were charged in error (e.g., after you cancelled), please contact us immediately.

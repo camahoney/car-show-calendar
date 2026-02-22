@@ -128,7 +128,7 @@ export default function VendorRegistrationPage() {
                     </div>
 
                     <div className="mb-4">
-                        <h3 className="text-xl font-bold text-white mb-2">Vendor Pro</h3>
+                        <h3 className="text-xl font-bold text-white mb-2">Founding Vendor</h3>
                         <div className="flex items-baseline gap-1">
                             <span className="text-3xl font-bold text-white">$99</span>
                             <span className="text-muted-foreground">/year</span>

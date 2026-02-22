@@ -174,7 +174,7 @@ export default async function VendorProfilePage({ params }: PageProps) {
                             </div>
                         ) : (
                             <div className="mt-8 p-6 rounded-xl bg-white/5 border border-white/10 text-center">
-                                <p className="text-muted-foreground mb-4">Contact information is available for Pro vendors.</p>
+                                <p className="text-muted-foreground mb-4">Contact information is available for Founding Vendors.</p>
                                 {/* Disabled button for visitors */}
                                 <Button disabled variant="secondary" className="opacity-50">
                                     Unlock Contact Info
