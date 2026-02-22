@@ -112,17 +112,7 @@ export async function getOrganizerStats() {
     }
 }
 
-export async function incrementView(eventId: string) {
-    try {
-        await prisma.event.update({
-            where: { id: eventId },
-            data: { views: { increment: 1 } },
-        });
-        revalidatePath(`/events/${eventId}`);
-    } catch (error) {
-        console.error("Failed to increment view:", error);
-    }
-}
+
 
 export async function incrementClick(eventId: string) {
     try {
