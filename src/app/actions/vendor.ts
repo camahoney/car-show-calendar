@@ -81,39 +81,42 @@ export async function registerVendor(data: {
             }
         });
 
-        // Handle PRO Payment
+        // Handle PRO Payment — create Stripe checkout with dynamic price
         if (data.subscriptionTier === "PRO") {
-            // Import stripe lazily to avoid circular issues if any? No, import at top.
-            // But we need to define stripe price id.
-            const priceId = process.env.STRIPE_VENDOR_PRO_PRICE_ID;
-
-            if (priceId) {
+            try {
                 const { stripe } = await import("@/lib/stripe");
-                const session = await stripe.checkout.sessions.create({
-                    mode: "subscription",
+                const checkoutSession = await stripe.checkout.sessions.create({
+                    mode: "payment",
+                    allow_promotion_codes: true,
                     payment_method_types: ["card"],
                     line_items: [
                         {
-                            price: priceId,
+                            price_data: {
+                                currency: "usd",
+                                product_data: {
+                                    name: "Founding Vendor Membership",
+                                    description: "Verified Blue Badge, Enhanced Profile, Priority Search Visibility, Attach Profile to Events. 1 Year Membership.",
+                                },
+                                unit_amount: 9900, // $99.00
+                            },
                             quantity: 1,
                         },
                     ],
                     metadata: {
-                        type: "VENDOR_SUBSCRIPTION",
-                        vendorId: vendor.id,
+                        type: "VENDOR_PRO",
                         userId: user.id,
-                        tier: "PRO"
                     },
-                    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/vendors/${vendor.slug}?success=true`,
-                    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/vendors/register?canceled=true`,
-                    customer_email: user.email || undefined
+                    success_url: `${process.env.NEXTAUTH_URL}/vendors/${vendor.slug}?success=true`,
+                    cancel_url: `${process.env.NEXTAUTH_URL}/vendors/register?canceled=true`,
+                    customer_email: user.email || undefined,
                 });
 
-                if (session.url) {
-                    return { success: true, redirectUrl: session.url, data: vendor };
+                if (checkoutSession.url) {
+                    return { success: true, redirectUrl: checkoutSession.url, data: vendor };
                 }
-            } else {
-                console.warn("Missing STRIPE_VENDOR_PRO_PRICE_ID, creating as PRO but no payment charged.");
+            } catch (stripeError) {
+                console.error("Stripe checkout creation failed:", stripeError);
+                // Vendor was created as FREE — they can upgrade later from billing page
             }
         }
 
