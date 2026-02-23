@@ -1,17 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { incrementView } from "@/app/actions/analytics";
 
 export function ViewTracker({ eventId }: { eventId: string }) {
     useEffect(() => {
-        // Increment view count on mount (API route handles bot/admin filtering)
-        fetch("/api/analytics/view", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ eventId }),
-        }).catch(err => console.error("Failed to track view:", err));
+        // Increment view count on mount
+        incrementView(eventId);
     }, [eventId]);
 
     return null;
