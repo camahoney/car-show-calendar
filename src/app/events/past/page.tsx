@@ -26,9 +26,12 @@ export default async function PastEventsPage({ searchParams }: PageProps) {
     const typeFilter = typeof params.type === "string" ? params.type : "";
     const yearFilter = typeof params.year === "string" ? params.year : "";
 
-    // Build where clause
+    // Build where clause — require BOTH startDateTime and endDateTime in the past
+    // to guard against events with bad endDateTime data
+    const now = new Date();
     const whereClause: any = {
-        endDateTime: { lt: new Date() },
+        startDateTime: { lt: now },
+        endDateTime: { lt: now },
         status: { in: ["EXPIRED", "APPROVED", "PUBLISHED", "SUBMITTED"] },
     };
 
@@ -66,7 +69,7 @@ export default async function PastEventsPage({ searchParams }: PageProps) {
             take: 100,
         }),
         prisma.event.findMany({
-            where: { endDateTime: { lt: new Date() } },
+            where: { startDateTime: { lt: now }, endDateTime: { lt: now } },
             select: { state: true },
             distinct: ["state"],
             orderBy: { state: "asc" },
@@ -74,7 +77,7 @@ export default async function PastEventsPage({ searchParams }: PageProps) {
         prisma.$queryRaw<{ year: number }[]>`
             SELECT DISTINCT EXTRACT(YEAR FROM "startDateTime")::int as year 
             FROM "Event" 
-            WHERE "endDateTime" < NOW() 
+            WHERE "startDateTime" < NOW() AND "endDateTime" < NOW() 
             ORDER BY year DESC
         `,
     ]);
