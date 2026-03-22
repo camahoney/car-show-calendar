@@ -145,9 +145,14 @@ export default async function EventsPage({ searchParams }: PageProps) {
 
             <div className="container relative z-10 mx-auto space-y-8">
                 <div className="flex flex-col gap-6">
-                    <div>
-                        <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Upcoming Events</h1>
-                        <p className="text-muted-foreground">Find your next automotive experience.</p>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Upcoming Events</h1>
+                            <p className="text-muted-foreground">Find your next automotive experience.</p>
+                        </div>
+                        <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                            <Link href="/events/past">Browse Past Events →</Link>
+                        </Button>
                     </div>
 
                     {/* Filters Component */}

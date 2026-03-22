@@ -9,17 +9,17 @@ export async function GET(req: Request) {
     try {
         const now = new Date();
 
-        // Find and update events that have ended and are not yet marked as COMPLETED or EXPIRED
-        // We only want to expire APPROVED events.
+        // Find and update events that have ended and are not yet marked as EXPIRED
+        // Expire both APPROVED and SUBMITTED events to keep the main feed clean
         const result = await prisma.event.updateMany({
             where: {
                 endDateTime: {
                     lt: now,
                 },
-                status: "APPROVED",
+                status: { in: ["APPROVED", "SUBMITTED", "PUBLISHED"] },
             },
             data: {
-                status: "EXPIRED", // Or "COMPLETED" if you prefer to distinguish
+                status: "EXPIRED",
             },
         });
 

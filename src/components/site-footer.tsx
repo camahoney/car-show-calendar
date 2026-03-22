@@ -30,6 +30,7 @@ export function SiteFooter() {
                             <li><Link href="/map" className="hover:text-primary transition-colors">Event Map</Link></li>
                             <li><Link href="/vendors" className="hover:text-primary transition-colors">Vendor Directory</Link></li>
                             <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
+                            <li><Link href="/events/past" className="hover:text-primary transition-colors">Past Events</Link></li>
                         </ul>
                     </div>
 

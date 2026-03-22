@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { format } from "date-fns";
-import { MapPin, Calendar, Globe, Ticket, User, Info, DollarSign, CloudRain, Heart, Map as MapIcon } from "lucide-react";
+import { MapPin, Calendar, Globe, Ticket, User, Info, DollarSign, CloudRain, Heart, Map as MapIcon, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -36,12 +36,15 @@ export async function generateMetadata({ params }: PageProps) {
 
     if (!event) return { title: "Event Not Found" };
 
+    const isPast = new Date(event.endDateTime) < new Date();
+
     return {
         title: `${event.title} - Car Show Calendar`,
         description: event.description.substring(0, 160),
         openGraph: {
             images: [event.posterUrl],
-        }
+        },
+        ...(isPast && { robots: { index: false, follow: true } }),
     };
 }
 
@@ -109,9 +112,10 @@ export default async function EventPage({ params }: PageProps) {
     }
 
     const fullAddress = `${event.addressLine1}, ${event.city}, ${event.state} ${event.zip}`;
+    const isPastEvent = new Date(event.endDateTime) < new Date();
 
-    // Fetch weather data
-    const weatherData = await getWeather(event.latitude, event.longitude);
+    // Fetch weather data (skip for past events)
+    const weatherData = isPastEvent ? null : await getWeather(event.latitude, event.longitude);
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -130,7 +134,29 @@ export default async function EventPage({ params }: PageProps) {
 
             <div className="container relative z-10 mx-auto px-4 py-8 pt-32 space-y-8">
 
-                {/* Header Section ... (unchanged) */}
+                {/* Past Event Banner */}
+                {isPastEvent && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-full bg-amber-500/20">
+                                <Clock className="h-5 w-5 text-amber-400" />
+                            </div>
+                            <div>
+                                <p className="font-semibold text-amber-200">This event has ended</p>
+                                <p className="text-sm text-amber-200/70">
+                                    This event took place on {format(new Date(event.startDateTime), "MMMM d, yyyy")}. Browse upcoming events to find your next show.
+                                </p>
+                            </div>
+                        </div>
+                        <Button asChild variant="outline" className="border-amber-500/30 text-amber-200 hover:bg-amber-500/10 shrink-0">
+                            <Link href="/events">
+                                Upcoming Events <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </div>
+                )}
+
+                {/* Header Section */}
                 <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="space-y-4 max-w-3xl">
                         <div className="flex flex-wrap gap-3">
@@ -171,16 +197,18 @@ export default async function EventPage({ params }: PageProps) {
                     </div>
 
                     <div className="flex gap-3 w-full md:w-auto">
-                        <AddToCalendar
-                            event={{
-                                title: event.title,
-                                description: event.description,
-                                startDateTime: event.startDateTime,
-                                endDateTime: event.endDateTime,
-                                venueName: event.venueName,
-                                address: fullAddress
-                            }}
-                        />
+                        {!isPastEvent && (
+                            <AddToCalendar
+                                event={{
+                                    title: event.title,
+                                    description: event.description,
+                                    startDateTime: event.startDateTime,
+                                    endDateTime: event.endDateTime,
+                                    venueName: event.venueName,
+                                    address: fullAddress
+                                }}
+                            />
+                        )}
                         <ShareButtons event={{ id: event.id, title: event.title }} />
                     </div>
                 </div>
@@ -238,13 +266,15 @@ export default async function EventPage({ params }: PageProps) {
                         {/* Attendees Section */}
                         <div className="glass p-6 rounded-2xl space-y-4">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-bold">Who&apos;s Going</h2>
-                                <RSVPButton
-                                    eventId={event.id}
-                                    isAttending={isAttending}
-                                    hasVehicles={userVehicles.length > 0}
-                                    userVehicles={userVehicles}
-                                />
+                                <h2 className="text-2xl font-bold">{isPastEvent ? "Who Attended" : "Who\u0027s Going"}</h2>
+                                {!isPastEvent && (
+                                    <RSVPButton
+                                        eventId={event.id}
+                                        isAttending={isAttending}
+                                        hasVehicles={userVehicles.length > 0}
+                                        userVehicles={userVehicles}
+                                    />
+                                )}
                             </div>
                             <AttendeesList rsvps={event.rsvps} />
                         </div>
@@ -260,17 +290,19 @@ export default async function EventPage({ params }: PageProps) {
 
 
 
-                        {/* Weather Section */}
-                        <div className="space-y-4">
-                            <h2 className="text-2xl font-bold flex items-center gap-2">
-                                <CloudRain className="h-6 w-6 text-primary" /> Forecast
-                            </h2>
-                            <WeatherWidget
-                                data={weatherData}
-                                eventDate={event.startDateTime}
-                                rainPolicy={event.rainDatePolicy}
-                            />
-                        </div>
+                        {/* Weather Section — only for upcoming events */}
+                        {!isPastEvent && weatherData && (
+                            <div className="space-y-4">
+                                <h2 className="text-2xl font-bold flex items-center gap-2">
+                                    <CloudRain className="h-6 w-6 text-primary" /> Forecast
+                                </h2>
+                                <WeatherWidget
+                                    data={weatherData}
+                                    eventDate={event.startDateTime}
+                                    rainPolicy={event.rainDatePolicy}
+                                />
+                            </div>
+                        )}
 
                         {/* Map Section */}
                         <div className="space-y-4">
@@ -371,10 +403,10 @@ export default async function EventPage({ params }: PageProps) {
                                 )}
                             </div>
 
-                            {/* Links - Only for Standard/Featured */}
+                            {/* Links - Only for Standard/Featured and not past events */}
                             {event.tier !== 'FREE' && (
                                 <div className="pt-4 space-y-3">
-                                    {event.registrationUrl && (
+                                    {!isPastEvent && event.registrationUrl && (
                                         <Button className="w-full bg-primary hover:bg-primary/90 font-bold h-12 text-lg shadow-lg shadow-primary/20" asChild>
                                             <Link href={event.registrationUrl} target="_blank" rel="noopener noreferrer">
                                                 <Ticket className="mr-2 h-5 w-5" /> Register Now
@@ -442,7 +474,7 @@ export default async function EventPage({ params }: PageProps) {
                         "startDate": event.startDateTime,
                         "endDate": event.endDateTime,
                         "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-                        "eventStatus": "https://schema.org/EventScheduled",
+                        "eventStatus": isPastEvent ? "https://schema.org/EventPostponed" : "https://schema.org/EventScheduled",
                         "location": {
                             "@type": "Place",
                             "name": event.venueName,
