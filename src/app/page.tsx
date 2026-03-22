@@ -9,7 +9,10 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   // Fetch optimized events
   const dbCall = prisma.event.findMany({
-    where: { status: { in: ["APPROVED", "SUBMITTED"] } },
+    where: {
+      status: { in: ["APPROVED", "SUBMITTED"] },
+      endDateTime: { gte: new Date() },
+    },
     orderBy: [{ startDateTime: 'asc' }],
     take: 50,
     include: { organizer: true }
