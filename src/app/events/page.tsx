@@ -141,8 +141,12 @@ export default async function EventsPage({ searchParams }: PageProps) {
 
     return (
         <div className="min-h-screen bg-background pt-24 pb-12 px-4">
-            {/* Background Gradient */}
-            <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background z-0" />
+            {/* Advanced Dynamic Background */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="hero-mesh-1 opacity-30 mix-blend-screen" />
+                <div className="hero-mesh-2 opacity-20 mix-blend-screen animate-float" />
+                <div className="absolute inset-0 bg-[#020817] z-0 opacity-40 mix-blend-multiply" />
+            </div>
 
             <div className="container relative z-10 mx-auto space-y-8">
                 <div className="flex flex-col gap-6">
@@ -162,18 +166,20 @@ export default async function EventsPage({ searchParams }: PageProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {events.length > 0 ? (
-                        events.map((event) => (
-                            <EventCard key={event.id} event={event} />
+                        events.map((event, i) => (
+                            <div key={event.id} className={`animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both`} style={{ animationDelay: `${i * 100}ms` }}>
+                                <EventCard event={event} />
+                            </div>
                         ))
                     ) : (
-                        <div className="col-span-full py-20 text-center space-y-6 bg-card/50 rounded-2xl border border-white/5">
-                            <div className="space-y-2">
-                                <h3 className="text-2xl font-bold text-white">No events found</h3>
-                                <p className="text-muted-foreground">
+                        <div className="col-span-full py-20 text-center space-y-6 ultra-glass rounded-3xl mx-auto max-w-2xl mt-12 animate-in fade-in zoom-in duration-500 border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                            <div className="space-y-3">
+                                <h3 className="text-3xl font-extrabold text-white tracking-tight drop-shadow-md">No events found</h3>
+                                <p className="text-muted-foreground text-lg">
                                     {query ? `No results for "${query}"` : "Try adjusting your filters or check back later."}
                                 </p>
                             </div>
-                            <Button asChild variant="outline">
+                            <Button asChild className="bg-primary hover:bg-primary/90 hover:scale-105 transition-all shadow-lg animate-pulse-glow hover:shadow-[0_0_25px_-5px_rgba(239,68,68,0.8)] font-bold text-lg px-8 py-6 rounded-full mt-4">
                                 <Link href="/events/new">Post a Car Show</Link>
                             </Button>
                         </div>
