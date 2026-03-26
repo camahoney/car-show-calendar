@@ -36,12 +36,15 @@ export default async function LocationPage({ params }: PageProps) {
         notFound();
     }
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const events = await prisma.event.findMany({
         where: {
             status: { in: ["APPROVED", "PUBLISHED"] },
             state: state.code,
-            endDateTime: {
-                gte: new Date(),
+            startDateTime: {
+                gte: today,
             },
         },
         orderBy: [

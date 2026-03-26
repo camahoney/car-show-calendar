@@ -23,10 +23,11 @@ export default async function EventsPage({ searchParams }: PageProps) {
     const filter = typeof params.filter === 'string' ? params.filter : 'all';
     const query = typeof params.q === 'string' ? params.q : '';
 
-    // Calculate Date Range
+    // Calculate Date Range — filter on startDateTime so events leave the feed
+    // the day after their start date
     const today = startOfToday();
     let dateFilter: any = {
-        gte: new Date(), // Default: Future events
+        gte: today, // Default: events starting today or later
     };
 
     if (filter === 'weekend') {
@@ -44,12 +45,12 @@ export default async function EventsPage({ searchParams }: PageProps) {
         // Let's stick to: End of *current* week.
 
         dateFilter = {
-            gte: new Date(),
+            gte: today,
             lte: sunday
         };
     } else if (filter === 'month') {
         dateFilter = {
-            gte: new Date(),
+            gte: today,
             lte: endOfMonth(today)
         };
     }
@@ -57,7 +58,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
     // Build Prisma Where Clause
     const whereClause: any = {
         status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] },
-        endDateTime: dateFilter,
+        startDateTime: dateFilter,
     };
 
     if (query) {
@@ -124,7 +125,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
                 include: { organizer: true }
             }),
             prisma.event.findMany({
-                where: { status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] }, endDateTime: { gte: new Date() } },
+                where: { status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] }, startDateTime: { gte: today } },
                 select: { state: true },
                 distinct: ['state'],
                 orderBy: { state: 'asc' }

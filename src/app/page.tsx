@@ -7,11 +7,14 @@ import { EventExplorer } from "@/components/home/event-explorer";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  // Fetch optimized events
+  // Only show events whose start date is today or in the future
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const dbCall = prisma.event.findMany({
     where: {
       status: { in: ["APPROVED", "SUBMITTED"] },
-      endDateTime: { gte: new Date() },
+      startDateTime: { gte: today },
     },
     orderBy: [{ startDateTime: 'asc' }],
     take: 50,

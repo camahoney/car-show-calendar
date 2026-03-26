@@ -36,7 +36,7 @@ export default async function OrganizerPage({ params }: PageProps) {
             events: {
                 where: {
                     status: { in: ["APPROVED", "PUBLISHED"] },
-                    endDateTime: { gte: new Date() } // Upcoming only
+                    startDateTime: { gte: new Date(new Date().setHours(0,0,0,0)) } // Today or later
                 },
                 orderBy: { startDateTime: "asc" },
                 include: { organizer: true } // Needed for EventCard

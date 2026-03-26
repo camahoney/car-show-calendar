@@ -10,12 +10,15 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function MapPage() {
-    // Fetch upcoming APPROVED events
+    // Fetch upcoming APPROVED events (start date today or later)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     const events = await prisma.event.findMany({
         where: {
             status: { in: ["APPROVED", "PUBLISHED", "SUBMITTED"] },
-            endDateTime: {
-                gte: new Date(),
+            startDateTime: {
+                gte: today,
             },
         },
         include: {
