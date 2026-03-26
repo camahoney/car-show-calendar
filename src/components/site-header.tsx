@@ -6,11 +6,21 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 export function SiteHeader() {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     const routes = [
         { href: "/pricing", label: "Pricing" },
@@ -20,11 +30,14 @@ export function SiteHeader() {
     ];
 
     return (
-        <header className="fixed top-0 w-full z-50 glass border-b border-white/5 shadow-2xl shadow-black/50">
-            <div className="container mx-auto px-4 h-20 flex items-center justify-between relative">
+        <header className={cn(
+            "fixed top-0 w-full z-50 transition-all duration-300",
+            scrolled ? "ultra-glass py-2" : "bg-transparent py-4"
+        )}>
+            <div className="container mx-auto px-4 flex items-center justify-between relative">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
-                    <div className="relative h-20 w-80 -ml-4 md:-ml-0">
+                    <div className="relative h-16 w-64 md:h-16 md:w-80 -ml-4 md:-ml-0">
                         <Image
                             src="/logo-wide.png"
                             alt="AutoShowList"
@@ -36,19 +49,26 @@ export function SiteHeader() {
                 </Link>
 
                 {/* Desktop Nav - Centered */}
-                <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1">
+                <nav className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center gap-1 p-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
                     {routes.map((route) => (
                         <Link
                             key={route.href}
                             href={route.href}
                             className={cn(
-                                "text-sm font-medium px-4 py-2 rounded-full transition-all hover:bg-white/10 hover:text-white",
+                                "relative px-4 py-2 text-sm font-medium rounded-full transition-colors",
                                 pathname === route.href
-                                    ? "text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]"
-                                    : "text-muted-foreground"
+                                    ? "text-white"
+                                    : "text-muted-foreground hover:text-white"
                             )}
                         >
-                            {route.label}
+                            {pathname === route.href && (
+                                <motion.div
+                                    layoutId="nav-active"
+                                    className="absolute inset-0 bg-white/10 rounded-full border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                />
+                            )}
+                            <span className="relative z-10">{route.label}</span>
                         </Link>
                     ))}
                 </nav>
@@ -56,7 +76,7 @@ export function SiteHeader() {
                 {/* Desktop Actions */}
                 <div className="hidden md:flex items-center gap-4">
                     <UserMenu />
-                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 font-bold" asChild>
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-white shadow-[0_0_15px_-3px_rgba(239,68,68,0.5)] hover:shadow-[0_0_25px_-5px_rgba(239,68,68,0.8)] hover:scale-105 transition-all font-bold animate-pulse-glow" asChild>
                         <Link href="/events/new">Post Event</Link>
                     </Button>
                 </div>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { EventExplorer } from "@/components/home/event-explorer";
+import { HeroContent } from "@/components/home/hero-content";
 
 export const dynamic = 'force-dynamic';
 
@@ -31,27 +32,15 @@ export default async function Home() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden border-b border-white/5 pt-24">
-        {/* Abstract Background Gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#020817] to-[#020817] z-0" />
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10 mix-blend-overlay z-0" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent z-10" />
+        {/* Advanced Dynamic Background */}
+        <div className="hero-mesh-1" />
+        <div className="hero-mesh-2" />
+        
+        <div className="absolute inset-0 bg-[#020817] z-0 opacity-40 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10 mix-blend-luminosity z-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(var(--background))] via-transparent to-transparent z-10" />
 
-        <div className="container relative z-20 px-4 text-center max-w-4xl mx-auto">
-          <div className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium animate-in fade-in slide-in-from-bottom-3 duration-500">
-            <Flame className="h-4 w-4" />
-            <span>The #1 Automotive Event Calendar</span>
-          </div>
-
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-            Fuel Your <span className="text-gradient-primary">Passion</span>
-          </h1>
-
-          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-5 duration-700 delay-200">
-            Discover the most exclusive car shows, meetups, and track days in your area. Join a community of over 50,000 enthusiasts.
-          </p>
-
-
-        </div>
+        <HeroContent />
       </section>
 
       {/* Main Content / Event Explorer */}

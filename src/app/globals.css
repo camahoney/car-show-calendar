@@ -84,29 +84,47 @@
   }
 }
 
-/* Custom Utilities for Glassmorphism */
+/* Custom Utilities for Glassmorphism & High-End UI */
 @layer utilities {
   .glass {
-    @apply bg-background/80 backdrop-blur-md border-b border-white/10;
+    @apply bg-background/70 backdrop-blur-lg border-b border-white/10;
+  }
+
+  .ultra-glass {
+    @apply bg-[#020817]/60 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
   }
 
   .glass-card {
-    @apply bg-card/50 backdrop-blur-sm border border-white/5 hover:bg-card/70 transition-all duration-300;
+    @apply bg-card/40 backdrop-blur-md border border-white/5 hover:border-white/20 hover:bg-card/60 transition-all duration-500 hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.15)];
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-500;
   }
 
   .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-rose-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-red-500 via-rose-500 to-orange-500;
   }
 
   .glow {
-    @apply shadow-[0_0_20px_-5px_var(--tw-shadow-color)] shadow-primary/50;
+    @apply shadow-[0_0_30px_-5px_var(--tw-shadow-color)] shadow-primary/60;
+  }
+
+  .glow-border {
+    @apply border border-transparent shadow-[inset_0_0_0_1px_rgba(239,68,68,0.5)];
   }
 
   .glow-text {
-    filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5));
+    filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.7));
+  }
+
+  .hero-mesh-1 {
+    @apply absolute -top-[20%] -left-[10%] w-[60%] h-[60%] rounded-full mix-blend-screen blur-[100px] bg-red-900/40 animate-mesh opacity-50;
+  }
+
+  .hero-mesh-2 {
+    @apply absolute top-[20%] -right-[10%] w-[50%] h-[70%] rounded-full mix-blend-screen blur-[120px] bg-rose-900/30 animate-mesh opacity-40;
+    animation-delay: -5s;
+    animation-duration: 25s;
   }
 }
