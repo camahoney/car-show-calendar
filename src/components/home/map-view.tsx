@@ -258,6 +258,12 @@ export default function MapView({ events }: MapViewProps) {
                 <MapContainer
                     center={center}
                     zoom={zoom}
+                    minZoom={4}
+                    maxBounds={[
+                        [15.0, -170.0], // Southwest (captures Hawaii)
+                        [72.0, -65.0]   // Northeast (captures Alaska & Maine)
+                    ]}
+                    maxBoundsViscosity={1.0}
                     scrollWheelZoom={true}
                     style={{ height: "100%", width: "100%" }}
                 >
