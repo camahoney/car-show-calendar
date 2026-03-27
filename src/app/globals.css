@@ -129,6 +129,60 @@
   }
 }
 
+/* Custom Leaflet Map Overrides */
+.leaflet-container {
+  font-family: var(--font-sans) !important;
+}
+
+/* Pulsing Red Marker */
+.pulse-marker {
+  width: 20px !important;
+  height: 20px !important;
+  background-color: theme('colors.primary.DEFAULT');
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 15px theme('colors.primary.DEFAULT');
+  border: 2px solid white;
+}
+
+.pulse-marker::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background-color: theme('colors.primary.DEFAULT');
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0.5;
+  animation: pulse-ring 2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+@keyframes pulse-ring {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+/* Glassmorphic Popups Override */
+.leaflet-popup-content-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.leaflet-popup-tip-container {
+  display: none !important; /* Remove the little arrow */
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  min-width: 280px !important;
+}
+
 /* Print Styles for Digital Reports & Media Kits */
 @media print {
   @page {
