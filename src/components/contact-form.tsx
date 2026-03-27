@@ -57,7 +57,7 @@ export function ContactForm() {
                     name="name"
                     placeholder="John Doe"
                     required
-                    className="bg-black/20 border-white/10"
+                    className="bg-black/40 border-white/10 focus-visible:ring-primary focus-visible:border-primary transition-colors text-white placeholder:text-muted-foreground/50 h-12"
                 />
                 {state.errors?.name && <p className="text-red-500 text-xs">{state.errors.name[0]}</p>}
             </div>
@@ -70,7 +70,7 @@ export function ContactForm() {
                     type="email"
                     placeholder="john@example.com"
                     required
-                    className="bg-black/20 border-white/10"
+                    className="bg-black/40 border-white/10 focus-visible:ring-primary focus-visible:border-primary transition-colors text-white placeholder:text-muted-foreground/50 h-12"
                 />
                 {state.errors?.email && <p className="text-red-500 text-xs">{state.errors.email[0]}</p>}
             </div>
@@ -82,7 +82,7 @@ export function ContactForm() {
                     name="subject"
                     placeholder="How can we help?"
                     required
-                    className="bg-black/20 border-white/10"
+                    className="bg-black/40 border-white/10 focus-visible:ring-primary focus-visible:border-primary transition-colors text-white placeholder:text-muted-foreground/50 h-12"
                 />
                 {state.errors?.subject && <p className="text-red-500 text-xs">{state.errors.subject[0]}</p>}
             </div>
@@ -94,12 +94,12 @@ export function ContactForm() {
                     name="message"
                     placeholder="Tell us more..."
                     required
-                    className="min-h-[150px] bg-black/20 border-white/10"
+                    className="min-h-[160px] bg-black/40 border-white/10 focus-visible:ring-primary focus-visible:border-primary transition-colors text-white placeholder:text-muted-foreground/50"
                 />
                 {state.errors?.message && <p className="text-red-500 text-xs">{state.errors.message[0]}</p>}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isPending}>
+            <Button type="submit" className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 text-white shadow-[0_0_20px_-5px_var(--tw-shadow-color)] shadow-primary/50 transition-all rounded-xl" disabled={isPending}>
                 {isPending ? (
                     <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

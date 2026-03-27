@@ -91,17 +91,17 @@ export default function PartnershipsPage() {
                     <Card className="bg-card border-white/10 hover:border-orange-500/30 transition-colors">
                         <CardHeader>
                             <CardTitle className="text-orange-400 flex items-center gap-2">
-                                <TrendingUp className="h-5 w-5" />
-                                Media &amp; Influencers
+                                <Calendar className="h-5 w-5" />
+                                Event Promoters
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3 text-sm text-muted-foreground">
-                            <p>Content partnerships, cross-promotion, and ambassador programs.</p>
+                            <p>Pack your lot and put your automotive event on the map.</p>
                             <ul className="space-y-1">
-                                <li>• Content sharing agreements</li>
-                                <li>• Event coverage collaboration</li>
-                                <li>• Affiliate referral program</li>
-                                <li>• Co-branded giveaways</li>
+                                <li>• Premium featured event placements</li>
+                                <li>• Nationwide audience amplification</li>
+                                <li>• High-conversion registration routing</li>
+                                <li>• Dedicated organizer profiles</li>
                             </ul>
                         </CardContent>
                     </Card>
