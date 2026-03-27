@@ -75,6 +75,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {/* @ts-expect-error - Impact specifies a non-standard value attribute */}
+        <meta name="impact-site-verification" value="8c2dd2f0-3c5d-4da9-a78b-e71c514cc57b" content="8c2dd2f0-3c5d-4da9-a78b-e71c514cc57b" />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
