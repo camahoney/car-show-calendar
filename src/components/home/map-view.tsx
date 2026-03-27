@@ -260,8 +260,8 @@ export default function MapView({ events }: MapViewProps) {
                     zoom={zoom}
                     minZoom={4}
                     maxBounds={[
-                        [15.0, -170.0], // Southwest (captures Hawaii)
-                        [72.0, -65.0]   // Northeast (captures Alaska & Maine)
+                        [24.0, -125.0], // Southwest contiguous US
+                        [50.0, -66.0]   // Northeast contiguous US
                     ]}
                     maxBoundsViscosity={1.0}
                     scrollWheelZoom={true}
