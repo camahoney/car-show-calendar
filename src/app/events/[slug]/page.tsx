@@ -119,17 +119,24 @@ export default async function EventPage({ params }: PageProps) {
 
     return (
         <div className="min-h-screen bg-background pb-20">
-            {/* Cinematic Background */}
-            <div className="fixed inset-0 h-[80vh] pointer-events-none z-0">
-                <Image
-                    src={event.posterUrl}
-                    alt="Background"
-                    fill
-                    className="object-cover opacity-20 blur-xl scale-110"
-                    priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
+            {/* Pulse Engine Cinematic Background */}
+            <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+                {/* Brand Gradients */}
+                <div className="hero-mesh-1 opacity-40 mix-blend-screen" />
+                <div className="hero-mesh-2 opacity-30 mix-blend-screen animate-float" />
+                
+                {/* Huge Blurred Poster */}
+                <div className="absolute inset-0 h-[80vh] z-10 w-full">
+                    <Image
+                        src={event.posterUrl}
+                        alt="Background"
+                        fill
+                        className="object-cover opacity-20 blur-3xl scale-110 mix-blend-screen"
+                        priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-transparent" />
+                </div>
             </div>
 
             <div className="container relative z-10 mx-auto px-4 py-8 pt-32 space-y-8">
@@ -159,39 +166,52 @@ export default async function EventPage({ params }: PageProps) {
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-end animate-in fade-in slide-in-from-bottom-8 duration-700">
                     <div className="space-y-4 max-w-3xl">
-                        <div className="flex flex-wrap gap-3">
-                            <Badge variant={event.tier === 'FEATURED' ? 'default' : 'secondary'} className={event.tier === 'FEATURED' ? "bg-primary text-white shadow-lg shadow-primary/20 backdrop-blur-md" : "backdrop-blur-md bg-white/10 text-white"}>
-                                {event.tier === 'FEATURED' ? 'Featured Event' : 'Standard Event'}
+                        <div className="flex flex-wrap gap-3 mb-6">
+                            <Badge variant={event.tier === 'FEATURED' || event.tier === 'PREMIUM' ? 'default' : 'secondary'} className={event.tier === 'FEATURED' || event.tier === 'PREMIUM' ? "bg-primary text-white font-black tracking-widest shadow-[0_0_15px_-3px_rgba(239,68,68,0.5)] border border-red-400/30 px-4 py-1.5 backdrop-blur-md" : "backdrop-blur-md bg-white/10 text-white font-bold tracking-wide border border-white/20 px-4 py-1.5"}>
+                                {event.tier === 'FEATURED' || event.tier === 'PREMIUM' ? 'FEATURED EVENT' : 'STANDARD ENTHUSIAST LISTING'}
                             </Badge>
-                            <Badge variant="outline" className="border-white/10 text-gray-200 backdrop-blur-md bg-black/20">
+                            <Badge variant="outline" className="border-white/20 text-gray-200 backdrop-blur-md bg-white/5 font-bold tracking-wide px-4 py-1.5">
                                 {event.judgedOrCruiseIn.replace('_', ' ')}
                             </Badge>
-                            <Badge variant="outline" className="border-white/10 text-gray-200 backdrop-blur-md bg-black/20">
+                            <Badge variant="outline" className="border-white/20 text-gray-200 backdrop-blur-md bg-white/5 font-bold tracking-wide px-4 py-1.5">
                                 {event.status}
                             </Badge>
                             {event.isPreRelease && (
-                                <Badge variant="secondary" className="bg-yellow-500 text-black font-bold shadow-lg shadow-yellow-500/20 border-0">
-                                    Save The Date
+                                <Badge variant="secondary" className="bg-yellow-500 text-black font-black tracking-widest shadow-lg shadow-yellow-500/20 border-0 px-4 py-1.5">
+                                    SAVE THE DATE
                                 </Badge>
                             )}
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-tight drop-shadow-2xl">
+                        <h1 className="text-5xl md:text-[5rem] lg:text-[6rem] font-black tracking-tighter text-white leading-[1.05] drop-shadow-2xl mb-8">
                             {event.title}
                         </h1>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-gray-300 text-lg font-medium drop-shadow-md">
-                            <div className="flex items-center gap-2">
-                                <Calendar className="h-5 w-5 text-primary" />
-                                <FormattedDate date={event.startDateTime} dateFormat="EEEE, MMMM do, yyyy" />
-                                <span className="text-sm bg-white/10 px-2 py-0.5 rounded-full border border-white/5 flex items-center gap-1">
+
+                        {/* Top Metadata Pills */}
+                        <div className="flex flex-wrap items-center gap-3 mt-4">
+                            {/* Date Pill */}
+                            <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full ultra-glass border border-white/10 shadow-lg">
+                                <Calendar className="w-5 h-5 text-blue-400" />
+                                <span className="text-sm font-bold text-white tracking-wide">
+                                    <FormattedDate date={event.startDateTime} dateFormat="EEEE, MMMM do, yyyy" />
+                                </span>
+                            </div>
+                            
+                            {/* Time Pill */}
+                            <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full ultra-glass border border-white/10 shadow-lg">
+                                <Clock className="w-5 h-5 text-orange-400" />
+                                <span className="text-sm font-bold text-white tracking-wide flex items-center gap-1">
                                     <FormattedDate date={event.startDateTime} dateFormat="h:mm a" />
-                                    <span>-</span>
+                                    <span className="text-muted-foreground font-normal">-</span>
                                     <FormattedDate date={event.endDateTime} dateFormat="h:mm a" />
                                 </span>
                             </div>
-                            <div className="hidden sm:block text-white/10">•</div>
-                            <div className="flex items-center gap-2">
-                                <MapPin className="h-5 w-5 text-primary" />
-                                <span>{event.city}, {event.state}</span>
+
+                            {/* Location Pill */}
+                            <div className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full ultra-glass border border-white/10 shadow-lg">
+                                <MapPin className="w-5 h-5 text-red-500" />
+                                <span className="text-sm font-bold text-white tracking-wide truncate max-w-[200px] sm:max-w-none">
+                                    {event.city}, {event.state}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -253,20 +273,20 @@ export default async function EventPage({ params }: PageProps) {
                         )}
 
                         {/* Description */}
-                        <div className="glass p-8 rounded-2xl space-y-4">
-                            <h2 className="text-2xl font-bold flex items-center gap-2">
-                                <Info className="h-6 w-6 text-primary" /> About Event
+                        <div className="ultra-glass p-8 rounded-[2rem] border border-white/10 space-y-5 shadow-2xl">
+                            <h2 className="text-3xl font-black tracking-tight flex items-center gap-3 text-white">
+                                <Info className="h-7 w-7 text-primary" /> About Event
                             </h2>
-                            <div className="prose prose-invert max-w-none text-gray-300 whitespace-pre-line leading-relaxed">
+                            <div className="prose prose-invert max-w-none text-gray-300 whitespace-pre-line leading-relaxed text-lg">
                                 {event.description}
                             </div>
                         </div>
 
 
                         {/* Attendees Section */}
-                        <div className="glass p-6 rounded-2xl space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-bold">{isPastEvent ? "Who Attended" : "Who\u0027s Going"}</h2>
+                        <div className="ultra-glass p-8 rounded-[2rem] border border-white/10 space-y-5 shadow-2xl">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <h2 className="text-3xl font-black tracking-tight text-white">{isPastEvent ? "Who Attended" : "Who\u0027s Going"}</h2>
                                 {!isPastEvent && (
                                     <RSVPButton
                                         eventId={event.id}
@@ -280,7 +300,7 @@ export default async function EventPage({ params }: PageProps) {
                         </div>
 
                         {/* Gallery Section */}
-                        <div className="glass p-6 rounded-2xl">
+                        <div className="ultra-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl">
                             <EventGallery
                                 eventId={event.id}
                                 photos={event.photos}
@@ -292,9 +312,9 @@ export default async function EventPage({ params }: PageProps) {
 
                         {/* Weather Section — only for upcoming events */}
                         {!isPastEvent && weatherData && (
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-bold flex items-center gap-2">
-                                    <CloudRain className="h-6 w-6 text-primary" /> Forecast
+                            <div className="ultra-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl space-y-5">
+                                <h2 className="text-3xl font-black tracking-tight flex items-center gap-3 text-white">
+                                    <CloudRain className="h-7 w-7 text-primary" /> Forecast
                                 </h2>
                                 <WeatherWidget
                                     data={weatherData}
@@ -305,19 +325,21 @@ export default async function EventPage({ params }: PageProps) {
                         )}
 
                         {/* Map Section */}
-                        <div className="space-y-4">
-                            <h2 className="text-2xl font-bold flex items-center gap-2">
-                                <MapPin className="h-6 w-6 text-primary" /> Location
+                        <div className="ultra-glass p-8 rounded-[2rem] border border-white/10 shadow-2xl space-y-5">
+                            <h2 className="text-3xl font-black tracking-tight flex items-center gap-3 text-white">
+                                <MapPin className="h-7 w-7 text-primary" /> Location
                             </h2>
-                            <EventMap
-                                lat={event.latitude}
-                                lng={event.longitude}
-                                address={fullAddress}
-                                venueName={event.venueName}
-                            />
-                            <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
-                                <p>{event.venueName}</p>
-                                <p>{fullAddress}</p>
+                            <div className="rounded-xl overflow-hidden ring-1 ring-white/10">
+                                <EventMap
+                                    lat={event.latitude}
+                                    lng={event.longitude}
+                                    address={fullAddress}
+                                    venueName={event.venueName}
+                                />
+                            </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm text-gray-300 px-2 gap-1 bg-black/20 p-3 rounded-xl border border-white/5">
+                                <p className="font-semibold text-white">{event.venueName}</p>
+                                <p className="text-muted-foreground">{fullAddress}</p>
                             </div>
                         </div>
                     </div>
@@ -339,8 +361,8 @@ export default async function EventPage({ params }: PageProps) {
                         )}
 
                         {/* Status Card */}
-                        <div className="glass p-6 rounded-2xl space-y-6">
-                            <h3 className="font-semibold text-lg border-b border-white/5 pb-4 mb-4">Event Details</h3>
+                        <div className="ultra-glass p-8 rounded-[2rem] border border-primary/20 bg-primary/[0.02] shadow-[0_0_40px_-10px_rgba(239,68,68,0.15)] space-y-6">
+                            <h3 className="font-black text-2xl tracking-wide border-b border-white/10 pb-4 mb-4 text-white">Event Details</h3>
 
                             <div className="space-y-4">
                                 <div className="flex items-start gap-4">
@@ -407,9 +429,9 @@ export default async function EventPage({ params }: PageProps) {
                             {event.tier !== 'FREE' && (
                                 <div className="pt-4 space-y-3">
                                     {!isPastEvent && event.registrationUrl && (
-                                        <Button className="w-full bg-primary hover:bg-primary/90 font-bold h-12 text-lg shadow-lg shadow-primary/20" asChild>
+                                        <Button className="w-full bg-primary hover:bg-primary/90 font-black h-14 text-lg shadow-[0_0_20px_-5px_rgba(239,68,68,0.6)] animate-pulse-glow hover:shadow-[0_0_30px_-5px_rgba(239,68,68,0.8)] transition-all duration-300" asChild>
                                             <Link href={event.registrationUrl} target="_blank" rel="noopener noreferrer">
-                                                <Ticket className="mr-2 h-5 w-5" /> Register Now
+                                                <Ticket className="mr-2 h-6 w-6" /> REGISTER NOW
                                             </Link>
                                         </Button>
                                     )}
@@ -445,13 +467,13 @@ export default async function EventPage({ params }: PageProps) {
 
                         {/* Charity Card */}
                         {event.charityBeneficiary && (
-                            <div className="glass p-6 rounded-2xl flex items-center gap-4">
-                                <div className="p-3 rounded-full bg-rose-500/20">
+                            <div className="ultra-glass p-6 rounded-[2rem] border border-white/10 shadow-xl flex items-center gap-4">
+                                <div className="p-4 rounded-full bg-rose-500/20 ring-1 ring-rose-500/30">
                                     <Heart className="h-6 w-6 text-rose-500" />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-muted-foreground">Benefiting Charity</p>
-                                    <p className="font-semibold text-white">{event.charityBeneficiary}</p>
+                                    <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Benefiting Charity</p>
+                                    <p className="font-black text-lg text-white">{event.charityBeneficiary}</p>
                                 </div>
                             </div>
                         )}
